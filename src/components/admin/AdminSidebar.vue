@@ -14,20 +14,26 @@
 
     <div class="space-y-4">
       <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Workspace</p>
-      <nav class="space-y-2">
-        <button class="flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-900 shadow-sm">
+      <ElMenu
+        class="border-0 !border-r-0 bg-transparent"
+        background-color="transparent"
+        text-color="#64748b"
+        active-text-color="#0f172a"
+        :default-active="'dashboard'"
+      >
+        <ElMenuItem index="dashboard" class="!h-12 !rounded-xl !px-4 !text-sm !font-medium !text-slate-900 !bg-white !shadow-sm">
           Dashboard
-        </button>
-        <button class="flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left text-sm text-slate-500 hover:bg-slate-50">
+        </ElMenuItem>
+        <ElMenuItem index="students" class="!h-12 !rounded-xl !px-4 !text-sm !text-slate-500 hover:!bg-slate-50">
           Students
-        </button>
-        <button class="flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left text-sm text-slate-500 hover:bg-slate-50">
+        </ElMenuItem>
+        <ElMenuItem index="classes" class="!h-12 !rounded-xl !px-4 !text-sm !text-slate-500 hover:!bg-slate-50">
           Classes
-        </button>
-        <button class="flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left text-sm text-slate-500 hover:bg-slate-50">
+        </ElMenuItem>
+        <ElMenuItem index="staff" class="!h-12 !rounded-xl !px-4 !text-sm !text-slate-500 hover:!bg-slate-50">
           Staff
-        </button>
-      </nav>
+        </ElMenuItem>
+      </ElMenu>
     </div>
 
     <div class="mt-auto space-y-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4">

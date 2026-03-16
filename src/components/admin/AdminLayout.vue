@@ -6,10 +6,6 @@ import AdminTopbar from './AdminTopbar.vue'
 
 const isSidebarOpen = shallowRef(false)
 
-const closeSidebar = () => {
-  isSidebarOpen.value = false
-}
-
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
@@ -35,35 +31,16 @@ const toggleSidebar = () => {
       </div>
     </div>
 
-    <transition
-      enter-active-class="transition duration-200"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition duration-150"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
+    <ElDrawer
+      v-model="isSidebarOpen"
+      direction="ltr"
+      size="18rem"
+      :with-header="false"
+      class="lg:hidden"
     >
-      <div
-        v-if="isSidebarOpen"
-        class="fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-sm lg:hidden"
-        @click="closeSidebar"
-      ></div>
-    </transition>
-
-    <transition
-      enter-active-class="transition duration-200 ease-out"
-      enter-from-class="-translate-x-full opacity-0"
-      enter-to-class="translate-x-0 opacity-100"
-      leave-active-class="transition duration-150 ease-in"
-      leave-from-class="translate-x-0 opacity-100"
-      leave-to-class="-translate-x-full opacity-0"
-    >
-      <aside
-        v-if="isSidebarOpen"
-        class="fixed inset-y-0 left-0 z-50 w-72 border-r border-[color:var(--color-border)] bg-white/95 shadow-2xl lg:hidden"
-      >
+      <div class="h-full border-r border-[color:var(--color-border)] bg-white/95">
         <AdminSidebar />
-      </aside>
-    </transition>
+      </div>
+    </ElDrawer>
   </div>
 </template>
