@@ -9,7 +9,7 @@ const searchQuery = shallowRef('')
   <header class="sticky top-0 z-30 border-b border-[color:var(--color-border)] bg-white/80 backdrop-blur">
     <div class="flex items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
       <ElButton
-        class="h-10 w-10 rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm lg:hidden"
+        class="inline-flex h-10 w-10 rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm lg:!hidden"
         plain
         @click="emit('toggleSidebar')"
       >
