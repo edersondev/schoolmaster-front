@@ -1,24 +1,46 @@
 <script setup>
 import { shallowRef } from 'vue'
+import { ArrowLeft, ArrowRight, Expand } from '@element-plus/icons-vue'
 
-const emit = defineEmits(['toggleSidebar'])
+const props = defineProps({
+  isSidebarCollapsed: {
+    type: Boolean,
+    default: false,
+  },
+  isMobileSidebarOpen: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const emit = defineEmits(['toggleDesktopSidebar', 'toggleMobileSidebar'])
 const searchQuery = shallowRef('')
 </script>
 
 <template>
   <header class="sticky top-0 z-30 border-b border-[color:var(--color-border)] bg-white/80 backdrop-blur">
-    <div class="flex items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-4 px-4 py-4 sm:px-4 lg:px-4">
       <ElButton
-        class="inline-flex h-10 w-10 rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm lg:!hidden"
-        plain
-        @click="emit('toggleSidebar')"
+        class="!hidden h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm lg:!flex"
+        circle
+        @click="emit('toggleDesktopSidebar')"
       >
         <span class="sr-only">Toggle sidebar</span>
-        <div class="space-y-1">
-          <span class="block h-0.5 w-5 rounded-full bg-current"></span>
-          <span class="block h-0.5 w-4 rounded-full bg-current"></span>
-          <span class="block h-0.5 w-5 rounded-full bg-current"></span>
-        </div>
+        <ElIcon class="text-lg">
+          <ArrowLeft v-if="!props.isSidebarCollapsed" />
+          <ArrowRight v-else />
+        </ElIcon>
+      </ElButton>
+
+      <ElButton
+        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm lg:!hidden"
+        plain
+        @click="emit('toggleMobileSidebar')"
+      >
+        <span class="sr-only">Toggle sidebar</span>
+        <ElIcon class="text-lg">
+          <Expand />
+        </ElIcon>
       </ElButton>
 
       <div class="flex flex-1 items-center gap-3">
