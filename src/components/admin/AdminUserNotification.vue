@@ -49,7 +49,7 @@ const notifications = [
 </script>
 
 <template>
-  <ElDropdown trigger="click" placement="bottom-end" size="small">
+  <ElDropdown trigger="click" placement="bottom-end">
     <ElBadge is-dot class="inline-flex">
       <ElButton
         class="h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm"
@@ -65,7 +65,7 @@ const notifications = [
 
     <template #dropdown>
       <div
-        class="bg-white/95 p-4 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)]"
+        class="w-[360px] bg-white/95 p-4 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)]"
       >
         <div class="flex items-center justify-between">
           <span class="text-sm font-semibold text-slate-800">Notification</span>
@@ -84,7 +84,7 @@ const notifications = [
                     </div>
   
                     <div class="flex-1">
-                        <span class="text-sm text-slate-700">
+                        <span class="text-sm text-slate-700 whitespace-pre-line">
                             <span class="font-semibold text-slate-800">{{ notice.name }}</span>
                             {{ notice.description }}
                             <span class="font-semibold text-slate-800">{{ notice.feature }}</span>
