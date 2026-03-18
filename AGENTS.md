@@ -16,6 +16,7 @@
 
 ## Coding Style & Naming Conventions
 - Vue 3 with Composition API and `<script setup>`.
+- Always use the `vue-best-practices` skill for Vue-related work.
 - State management via Pinia (`src/stores`); routing via Vue Router (`src/router`).
 - Use clear, descriptive file and component names (e.g., `UserList.vue`, `useAuthStore.js`).
 - Keep logic in composables/stores rather than components when reusable.
