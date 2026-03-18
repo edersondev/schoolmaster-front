@@ -1,6 +1,7 @@
 <script setup>
 import { shallowRef } from 'vue'
 import { ArrowLeft, ArrowRight, Expand } from '@element-plus/icons-vue'
+import AdminUserMenu from './AdminUserMenu.vue'
 
 const { isSidebarCollapsed } = defineProps({
   isSidebarCollapsed: {
@@ -58,12 +59,7 @@ const searchQuery = shallowRef('')
         </div>
       </div>
 
-      <ElButton class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 shadow-sm" plain>
-        <span class="hidden text-xs uppercase tracking-[0.2em] text-slate-400 sm:inline">Admin</span>
-        <span class="grid h-8 w-8 place-items-center rounded-lg bg-slate-900 text-xs font-semibold text-white">
-          SA
-        </span>
-      </ElButton>
+      <AdminUserMenu />
     </div>
   </header>
 </template>
