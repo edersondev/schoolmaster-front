@@ -2,12 +2,8 @@
 import { shallowRef } from 'vue'
 import { ArrowLeft, ArrowRight, Expand } from '@element-plus/icons-vue'
 
-const props = defineProps({
+const { isSidebarCollapsed } = defineProps({
   isSidebarCollapsed: {
-    type: Boolean,
-    default: false,
-  },
-  isMobileSidebarOpen: {
     type: Boolean,
     default: false,
   },
@@ -27,7 +23,7 @@ const searchQuery = shallowRef('')
       >
         <span class="sr-only">Toggle sidebar</span>
         <ElIcon class="text-lg">
-          <ArrowLeft v-if="!props.isSidebarCollapsed" />
+          <ArrowLeft v-if="!isSidebarCollapsed" />
           <ArrowRight v-else />
         </ElIcon>
       </ElButton>
