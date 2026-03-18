@@ -2,6 +2,7 @@
 import { shallowRef } from 'vue'
 import { ArrowLeft, ArrowRight, Expand } from '@element-plus/icons-vue'
 import AdminUserMenu from './AdminUserMenu.vue'
+import AdminUserNotification from './AdminUserNotification.vue'
 
 const { isSidebarCollapsed } = defineProps({
   isSidebarCollapsed: {
@@ -59,7 +60,10 @@ const searchQuery = shallowRef('')
         </div>
       </div>
 
-      <AdminUserMenu />
+      <div class="flex items-center gap-3">
+        <AdminUserNotification />
+        <AdminUserMenu />
+      </div>
     </div>
   </header>
 </template>
