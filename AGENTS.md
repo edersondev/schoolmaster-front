@@ -19,6 +19,7 @@
 - State management via Pinia (`src/stores`); routing via Vue Router (`src/router`).
 - Use clear, descriptive file and component names (e.g., `UserList.vue`, `useAuthStore.js`).
 - Keep logic in composables/stores rather than components when reusable.
+- Prefer destructuring (e.g., `defineProps`, `defineEmits`, store state) when it improves readability and avoids repeated `props.` or `store.` access.
 - Use Element-Plus components for UI alongside Tailwind CSS v4 utilities.
 - Tailwind CSS v4 is available; keep class lists readable and grouped by layout/spacing/typography.
 
