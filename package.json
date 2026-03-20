@@ -12,6 +12,7 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
     "@tailwindcss/vite": "^4.2.1",
+    "@vueuse/core": "^14.2.1",
     "element-plus": "^2.13.5",
     "pinia": "^3.0.4",
     "tailwindcss": "^4.2.1",
