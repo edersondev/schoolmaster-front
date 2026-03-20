@@ -18,14 +18,14 @@ const menuItems = [
 
 const menuItemClass = computed(() =>
   collapsed
-    ? '!h-12 !w-12 !justify-center !rounded-xl !px-0 !text-slate-500 hover:!bg-slate-50'
-    : '!h-12 !rounded-xl !px-4 !text-sm !text-slate-500 hover:!bg-slate-50'
+    ? '!h-12 !w-12 !justify-center !rounded-xl !px-0 hover:!bg-slate-50'
+    : '!h-12 !rounded-xl !px-4 !text-sm hover:!bg-slate-50'
 )
 
 const dashboardClass = computed(() =>
   collapsed
-    ? '!h-12 !w-12 !justify-center !rounded-xl !px-0 !text-slate-900 !bg-white !shadow-sm'
-    : '!h-12 !rounded-xl !px-4 !text-sm !font-medium !text-slate-900 !bg-white !shadow-sm'
+    ? '!h-12 !w-12 !justify-center !rounded-xl !px-0 !bg-white !shadow-sm'
+    : '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white !shadow-sm'
 )
 </script>
 
@@ -36,13 +36,13 @@ const dashboardClass = computed(() =>
         SM
       </div>
       <div v-if="!collapsed">
-        <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Admin</p>
+        <p class="text-xs uppercase tracking-[0.2em]">Admin</p>
         <p class="text-lg font-semibold text-[color:var(--color-foreground)]">Schoolmaster</p>
       </div>
     </div>
 
     <div class="space-y-4" :class="collapsed ? 'w-full' : ''">
-      <p v-if="!collapsed" class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Workspace</p>
+      <p v-if="!collapsed" class="text-xs font-semibold uppercase tracking-[0.2em]">Workspace</p>
       <ElMenu
         class="border-0 !border-r-0 bg-transparent"
         background-color="transparent"
@@ -76,8 +76,8 @@ const dashboardClass = computed(() =>
       v-if="!collapsed"
       class="mt-auto space-y-4 rounded-2xl border border-dashed border-slate-200 bg-[color:var(--color-surface-muted)] p-4"
     >
-      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Quick Notes</p>
-      <div class="space-y-2 text-sm text-slate-500">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em]">Quick Notes</p>
+      <div class="space-y-2 text-sm">
         <p>Placeholder blocks for upcoming widgets.</p>
         <p>Keep this area empty for now.</p>
       </div>

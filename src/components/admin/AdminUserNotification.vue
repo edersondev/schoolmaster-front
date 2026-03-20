@@ -52,7 +52,7 @@ const notifications = [
   <ElDropdown trigger="click" placement="bottom-end">
     <ElBadge is-dot class="inline-flex">
       <ElButton
-        class="h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm"
+        class="h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm"
         circle
         plain
       >
@@ -65,10 +65,10 @@ const notifications = [
 
     <template #dropdown>
       <div
-        class="w-[360px] bg-white/95 p-4 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)]"
+        class="w-[360px] border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-4 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)]"
       >
         <div class="flex items-center justify-between">
-          <span class="text-sm font-semibold text-slate-800">Notification</span>
+          <span class="text-sm font-semibold">Notification</span>
         </div>
 
         <div class="my-3 border-t border-slate-200" />
@@ -77,19 +77,19 @@ const notifications = [
           <el-dropdown-menu>
               <el-dropdown-item v-for="notice in notifications" :key="notice.id">
                 <div class="flex gap-3 border-b border-slate-100 py-3 last:border-b-0">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--color-border)]">
                         <ElIcon class="text-base">
                             <Avatar />
                         </ElIcon>
                     </div>
   
                     <div class="flex-1">
-                        <span class="text-sm text-slate-700 whitespace-pre-line">
-                            <span class="font-semibold text-slate-800">{{ notice.name }}</span>
+                        <span class="text-sm whitespace-pre-line">
+                            <span class="font-semibold">{{ notice.name }}</span>
                             {{ notice.description }}
-                            <span class="font-semibold text-slate-800">{{ notice.feature }}</span>
+                            <span class="font-semibold">{{ notice.feature }}</span>
                         </span>
-                        <div class="mt-1 text-xs text-slate-400">
+                        <div class="mt-1 text-xs">
                             {{ notice.feature }} - {{ notice.time }}
                         </div>
                     </div>

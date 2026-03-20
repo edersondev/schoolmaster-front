@@ -19,15 +19,15 @@ const handleVisibleChange = (visible) => {
 <template>
   <ElDropdown trigger="click" placement="bottom-end" @visible-change="handleVisibleChange">
     <ElButton
-      class="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-600 shadow-sm"
+      class="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm shadow-sm"
       plain
     >
       <span class="flex items-center gap-2">
-        <ElIcon class="text-base text-slate-500">
+        <ElIcon class="text-base">
           <User />
         </ElIcon>
-        <span class="text-sm font-semibold text-slate-700">{{ firstName }}</span>
-        <ElIcon class="text-base text-slate-400">
+        <span class="text-sm font-semibold">{{ firstName }}</span>
+        <ElIcon class="text-base">
           <ArrowUp v-if="isMenuOpen" />
           <ArrowDown v-else />
         </ElIcon>
@@ -38,14 +38,14 @@ const handleVisibleChange = (visible) => {
       <ElDropdownMenu class="min-w-[220px]">
         <ElDropdownItem disabled class="!cursor-default !opacity-100 !py-3">
           <div class="flex flex-col">
-            <span class="text-sm font-semibold text-slate-800">{{ user.name }}</span>
-            <span class="text-xs text-slate-500">{{ user.email }}</span>
+            <span class="text-sm font-semibold">{{ user.name }}</span>
+            <span class="text-xs">{{ user.email }}</span>
           </div>
         </ElDropdownItem>
 
         <ElDropdownItem>
-          <span class="flex items-center gap-2 text-sm text-slate-700">
-            <ElIcon class="text-base text-slate-500">
+          <span class="flex items-center gap-2 text-sm">
+            <ElIcon class="text-base">
               <Avatar />
             </ElIcon>
             Edit profile
@@ -53,8 +53,8 @@ const handleVisibleChange = (visible) => {
         </ElDropdownItem>
 
         <ElDropdownItem>
-          <span class="flex items-center gap-2 text-sm text-slate-700">
-            <ElIcon class="text-base text-slate-500">
+          <span class="flex items-center gap-2 text-sm">
+            <ElIcon class="text-base">
               <Setting />
             </ElIcon>
             Account settings
@@ -62,8 +62,8 @@ const handleVisibleChange = (visible) => {
         </ElDropdownItem>
 
         <ElDropdownItem>
-          <span class="flex items-center gap-2 text-sm text-slate-700">
-            <ElIcon class="text-base text-slate-500">
+          <span class="flex items-center gap-2 text-sm">
+            <ElIcon class="text-base">
               <Help />
             </ElIcon>
             Support
@@ -71,8 +71,8 @@ const handleVisibleChange = (visible) => {
         </ElDropdownItem>
 
         <ElDropdownItem divided>
-          <span class="flex items-center gap-2 text-sm text-slate-700">
-            <ElIcon class="text-base text-slate-500">
+          <span class="flex items-center gap-2 text-sm">
+            <ElIcon class="text-base">
               <SwitchButton />
             </ElIcon>
             Sign out
