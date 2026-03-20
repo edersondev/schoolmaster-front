@@ -5,6 +5,7 @@
 @theme {
   --color-background: oklch(99.2% 0.02 105);
   --color-foreground: oklch(16% 0.02 264);
+  --color-foreground-muted: #555555;
   --color-surface: oklch(100% 0 0);
   --color-surface-muted: oklch(97.5% 0.02 105);
   --color-border: oklch(91% 0.02 264);
@@ -21,6 +22,40 @@
     color-scheme: light;
   }
 
+  :root.dark {
+    color-scheme: dark;
+    --color-background: #1a2231;
+    --color-foreground: #e1e5ee;
+    --color-foreground-muted: #aab3c2;
+    --color-surface: #222c3f;
+    --color-surface-muted: #2a3448;
+    --color-border: #2f3b52;
+    --color-accent: #60a5fa;
+    --color-accent-foreground: #1a2231;
+
+    --el-bg-color: var(--color-surface);
+    --el-bg-color-overlay: var(--color-surface);
+    --el-fill-color-blank: var(--color-surface);
+    --el-border-color: var(--color-border);
+    --el-text-color-primary: #ffffff;
+    --el-text-color-regular: var(--color-foreground);
+    --el-text-color-secondary: var(--color-foreground-muted);
+    --el-button-bg-color: var(--color-surface);
+    --el-button-border-color: var(--color-border);
+    --el-button-text-color: var(--color-foreground);
+    --el-button-hover-bg-color: var(--color-surface-muted);
+    --el-button-hover-border-color: var(--color-border);
+    --el-button-active-bg-color: var(--color-surface-muted);
+    --el-button-active-border-color: var(--color-border);
+  }
+
+  :root.dark h1,
+  :root.dark h2,
+  :root.dark h3,
+  :root.dark h4 {
+    color: #ffffff;
+  }
+
   * {
     @apply border-[color:var(--color-border)];
   }
@@ -33,6 +68,14 @@
 }
 
 @layer utilities {
+  :root.dark .text-2xl,
+  :root.dark .text-3xl,
+  :root.dark .text-4xl,
+  :root.dark .text-5xl,
+  :root.dark .text-6xl {
+    color: #ffffff;
+  }
+
   .app-bg {
     background:
       radial-gradient(1000px 600px at 10% -10%, oklch(98% 0.08 120) 0%, transparent 60%),

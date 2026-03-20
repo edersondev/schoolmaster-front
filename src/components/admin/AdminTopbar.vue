@@ -3,6 +3,7 @@ import { shallowRef } from 'vue'
 import { ArrowLeft, ArrowRight, Expand } from '@element-plus/icons-vue'
 import AdminUserMenu from './AdminUserMenu.vue'
 import AdminUserNotification from './AdminUserNotification.vue'
+import AdminThemeToggle from './AdminThemeToggle.vue'
 
 const { isSidebarCollapsed } = defineProps({
   isSidebarCollapsed: {
@@ -16,10 +17,10 @@ const searchQuery = shallowRef('')
 </script>
 
 <template>
-  <header class="sticky top-0 z-30 border-b border-[color:var(--color-border)] bg-white/80 backdrop-blur">
+  <header class="sticky top-0 z-30 border-b border-[color:var(--color-border)] bg-[color:var(--color-surface)] backdrop-blur">
     <div class="flex items-center gap-4 px-4 py-4 sm:px-4 lg:px-4">
       <ElButton
-        class="!hidden h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm lg:!flex"
+        class="!hidden h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-[color:var(--color-surface)] text-slate-600 shadow-sm lg:!flex"
         circle
         @click="emit('toggleDesktopSidebar')"
       >
@@ -31,7 +32,7 @@ const searchQuery = shallowRef('')
       </ElButton>
 
       <ElButton
-        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm lg:!hidden"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-[color:var(--color-surface)] text-slate-600 shadow-sm lg:!hidden"
         plain
         @click="emit('toggleMobileSidebar')"
       >
@@ -49,7 +50,7 @@ const searchQuery = shallowRef('')
           <ElInput
             v-model="searchQuery"
             class="h-11"
-            input-class="h-11 rounded-xl border border-slate-200 bg-white/70 pl-10 pr-4 text-sm text-slate-600 placeholder:text-slate-400 focus:outline-none"
+            input-class="h-11 rounded-xl border border-slate-200 bg-[color:var(--color-surface)] pl-10 pr-4 text-sm text-slate-600 placeholder:text-slate-400 focus:outline-none"
             placeholder="Type to filter..."
             clearable
           >
@@ -61,6 +62,7 @@ const searchQuery = shallowRef('')
       </div>
 
       <div class="flex items-center gap-3">
+        <AdminThemeToggle />
         <AdminUserNotification />
         <AdminUserMenu />
       </div>

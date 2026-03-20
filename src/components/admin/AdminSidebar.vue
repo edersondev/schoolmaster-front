@@ -37,7 +37,7 @@ const dashboardClass = computed(() =>
       </div>
       <div v-if="!collapsed">
         <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Admin</p>
-        <p class="text-lg font-semibold text-slate-900">Schoolmaster</p>
+        <p class="text-lg font-semibold text-[color:var(--color-foreground)]">Schoolmaster</p>
       </div>
     </div>
 
@@ -74,7 +74,7 @@ const dashboardClass = computed(() =>
 
     <div
       v-if="!collapsed"
-      class="mt-auto space-y-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4"
+      class="mt-auto space-y-4 rounded-2xl border border-dashed border-slate-200 bg-[color:var(--color-surface-muted)] p-4"
     >
       <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Quick Notes</p>
       <div class="space-y-2 text-sm text-slate-500">

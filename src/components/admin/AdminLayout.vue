@@ -20,7 +20,7 @@ const toggleMobileSidebar = () => {
   <div class="app-bg min-h-screen">
     <div class="flex min-h-screen">
       <aside
-        class="hidden shrink-0 overflow-hidden border-r border-[color:var(--color-border)] bg-white/80 transition-[width] duration-300 lg:block"
+        class="hidden shrink-0 overflow-hidden border-r border-[color:var(--color-border)] bg-[color:var(--color-surface)] transition-[width] duration-300 lg:block"
         :class="isSidebarCollapsed ? 'w-20' : 'w-72'"
       >
         <AdminSidebar :collapsed="isSidebarCollapsed" />
@@ -34,9 +34,9 @@ const toggleMobileSidebar = () => {
           @toggle-mobile-sidebar="toggleMobileSidebar"
         />
 
-        <main class="flex-1 overflow-y-auto px-4 pb-8 pt-6 sm:px-6 lg:px-8">
+        <main class="flex-1 overflow-y-auto bg-[color:var(--color-background)] px-4 pb-8 pt-6 sm:px-6 lg:px-8">
           <div class="mx-auto w-full">
-            <div class="rounded-2xl border border-[color:var(--color-border)] bg-white/80 p-8 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)]">
+            <div class="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-8 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)]">
               <router-view />
             </div>
           </div>
@@ -51,7 +51,7 @@ const toggleMobileSidebar = () => {
       :with-header="false"
       class="lg:hidden"
     >
-      <div class="h-full border-r border-[color:var(--color-border)] bg-white/95">
+      <div class="h-full border-r border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
         <AdminSidebar :collapsed="false" />
       </div>
     </ElDrawer>
