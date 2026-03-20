@@ -15,7 +15,7 @@ const buttonLabel = computed(() =>
     class="h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm"
     circle
     plain
-    @click="themeStore.toggleTheme"
+    @click="themeStore.toggleDark()"
   >
     <span class="sr-only">{{ buttonLabel }}</span>
     <ElIcon class="text-lg">
