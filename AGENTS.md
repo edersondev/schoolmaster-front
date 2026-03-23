@@ -23,6 +23,7 @@
 - Prefer destructuring (e.g., `defineProps`, `defineEmits`, store state) when it improves readability and avoids repeated `props.` or `store.` access.
 - Use Element-Plus components for UI alongside Tailwind CSS v4 utilities.
 - Tailwind CSS v4 is available; keep class lists readable and grouped by layout/spacing/typography.
+- Use the global font color by default unless a different font color is explicitly requested.
 
 ## Testing Guidelines
 - Vitest is configured for frontend tests.
