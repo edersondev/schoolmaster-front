@@ -1,5 +1,6 @@
 <script setup>
 import { HomeFilled, Notebook, User, UserFilled } from '@element-plus/icons-vue'
+import { adminSidebarMenu } from './adminSidebarMenu'
 
 const { collapsed } = defineProps({
   collapsed: {
@@ -8,27 +9,12 @@ const { collapsed } = defineProps({
   },
 })
 
-const menuItems = [
-  { index: 'dashboard', label: 'Dashboard', icon: HomeFilled },
-  { index: 'students', label: 'Students', icon: User },
-  {
-    index: 'classes',
-    label: 'Classes',
-    icon: Notebook,
-    children: [
-      {
-        index: 'classes/programs',
-        label: 'Programs',
-        children: [
-          { index: 'classes/programs/schedule', label: 'Schedule' },
-          { index: 'classes/programs/subjects', label: 'Subjects' },
-        ],
-      },
-      { index: 'classes/assignments', label: 'Assignments' },
-    ],
-  },
-  { index: 'staff', label: 'Staff', icon: UserFilled },
-]
+const iconMap = {
+  HomeFilled,
+  Notebook,
+  User,
+  UserFilled,
+}
 
 const menuItemClass = '!h-12 !rounded-xl !text-sm'
 const dashboardClass = '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white !shadow-sm'
@@ -55,11 +41,11 @@ const dashboardClass = '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white 
         :collapse="collapsed"
         :default-active="'dashboard'"
       >
-        <template v-for="item in menuItems" :key="item.index">
+        <template v-for="item in adminSidebarMenu" :key="item.index">
           <ElSubMenu v-if="item.children" :index="item.index">
             <template #title>
-              <ElIcon class="text-base">
-                <component :is="item.icon" />
+              <ElIcon v-if="item.icon" class="text-base">
+                <component :is="iconMap[item.icon]" />
               </ElIcon>
               <span>{{ item.label }}</span>
             </template>
@@ -94,8 +80,8 @@ const dashboardClass = '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white 
             :index="item.index"
             :class="item.index === 'dashboard' ? dashboardClass : menuItemClass"
           >
-            <ElIcon class="text-base">
-              <component :is="item.icon" />
+            <ElIcon v-if="item.icon" class="text-base">
+              <component :is="iconMap[item.icon]" />
             </ElIcon>
             <span>{{ item.label }}</span>
           </ElMenuItem>
