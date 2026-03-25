@@ -1,6 +1,9 @@
 <script setup>
 import { HomeFilled, Notebook, User, UserFilled } from '@element-plus/icons-vue'
+import { useRoute } from 'vue-router'
 import { adminSidebarMenu } from './adminSidebarMenu'
+
+const route = useRoute()
 
 const { collapsed } = defineProps({
   collapsed: {
@@ -39,7 +42,8 @@ const dashboardClass = '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white 
         background-color="transparent"
         active-text-color="#0f172a"
         :collapse="collapsed"
-        :default-active="'dashboard'"
+        :default-active="route.path"
+        router
       >
         <template v-for="item in adminSidebarMenu" :key="item.index">
           <ElSubMenu v-if="item.children" :index="item.index">
@@ -78,7 +82,7 @@ const dashboardClass = '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white 
           <ElMenuItem
             v-else
             :index="item.index"
-            :class="item.index === 'dashboard' ? dashboardClass : menuItemClass"
+            :class="item.index === '/admin' ? dashboardClass : menuItemClass"
           >
             <ElIcon v-if="item.icon" class="text-base">
               <component :is="iconMap[item.icon]" />
