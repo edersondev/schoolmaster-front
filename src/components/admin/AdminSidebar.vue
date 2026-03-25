@@ -20,7 +20,6 @@ const iconMap = {
 }
 
 const menuItemClass = '!h-12 !rounded-xl !text-sm'
-const dashboardClass = '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white !shadow-sm'
 </script>
 
 <template>
@@ -82,7 +81,7 @@ const dashboardClass = '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white 
           <ElMenuItem
             v-else
             :index="item.index"
-            :class="item.index === '/admin' ? dashboardClass : menuItemClass"
+            :class="menuItemClass"
           >
             <ElIcon v-if="item.icon" class="text-base">
               <component :is="iconMap[item.icon]" />
@@ -105,3 +104,10 @@ const dashboardClass = '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white 
     </div>
   </div>
 </template>
+
+<style scoped>
+:deep(.el-menu-item.is-active) {
+  background-color: var(--el-menu-active-bg-color) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
+}
+</style>
