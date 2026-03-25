@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AdminLayout from '@/components/admin/AdminLayout.vue'
 import PublicLayout from '@/components/layouts/PublicLayout.vue'
 import HomePage from '@/pages/HomePage.vue'
+import NotFoundPage from '@/pages/NotFoundPage.vue'
 import AccountSettingsPage from '@/pages/account/AccountSettingsPage.vue'
 import EditProfilePage from '@/pages/account/EditProfilePage.vue'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage.vue'
@@ -24,6 +25,12 @@ const router = createRouter({
           path: '',
           name: 'home',
           component: HomePage,
+          meta: { role: 'shared' },
+        },
+        {
+          path: ':pathMatch(.*)*',
+          name: 'not-found',
+          component: NotFoundPage,
           meta: { role: 'shared' },
         },
       ],
