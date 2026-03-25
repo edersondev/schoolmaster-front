@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import AdminLayout from '@/components/admin/AdminLayout.vue'
-import DashboardPage from '@/pages/DashboardPage.vue'
+import PublicLayout from '@/components/layouts/PublicLayout.vue'
+import HomePage from '@/pages/HomePage.vue'
 import AccountSettingsPage from '@/pages/account/AccountSettingsPage.vue'
 import EditProfilePage from '@/pages/account/EditProfilePage.vue'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage.vue'
@@ -16,21 +17,16 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'dashboard',
-      component: DashboardPage,
+      component: PublicLayout,
       meta: { role: 'shared' },
-    },
-    {
-      path: '/account/edit-profile',
-      name: 'account-edit-profile',
-      component: EditProfilePage,
-      meta: { role: 'shared' },
-    },
-    {
-      path: '/account/settings',
-      name: 'account-settings',
-      component: AccountSettingsPage,
-      meta: { role: 'shared' },
+      children: [
+        {
+          path: '',
+          name: 'home',
+          component: HomePage,
+          meta: { role: 'shared' },
+        },
+      ],
     },
     {
       path: '/admin',
@@ -82,6 +78,18 @@ const router = createRouter({
           name: 'admin-staff',
           component: AdminSectionPage,
           meta: { role: 'admin', title: 'Staff' },
+        },
+        {
+          path: 'account/edit-profile',
+          name: 'account-edit-profile',
+          component: EditProfilePage,
+          meta: { role: 'admin', title: 'Edit Profile' },
+        },
+        {
+          path: 'account/settings',
+          name: 'account-settings',
+          component: AccountSettingsPage,
+          meta: { role: 'admin', title: 'Account Settings' },
         },
       ],
     },
