@@ -88,27 +88,55 @@ const router = createRouter({
     },
     {
       path: '/school-admin',
-      name: 'school-admin-dashboard',
-      component: SchoolAdminDashboardPage,
+      component: AdminLayout,
       meta: { role: 'school-admin' },
+      children: [
+        {
+          path: '',
+          name: 'school-admin-dashboard',
+          component: SchoolAdminDashboardPage,
+          meta: { role: 'school-admin' },
+        },
+      ],
     },
     {
       path: '/teacher',
-      name: 'teacher-dashboard',
-      component: TeacherDashboardPage,
+      component: AdminLayout,
       meta: { role: 'teacher' },
+      children: [
+        {
+          path: '',
+          name: 'teacher-dashboard',
+          component: TeacherDashboardPage,
+          meta: { role: 'teacher' },
+        },
+      ],
     },
     {
       path: '/student',
-      name: 'student-dashboard',
-      component: StudentDashboardPage,
+      component: AdminLayout,
       meta: { role: 'student' },
+      children: [
+        {
+          path: '',
+          name: 'student-dashboard',
+          component: StudentDashboardPage,
+          meta: { role: 'student' },
+        }
+      ],
     },
     {
       path: '/guardian',
-      name: 'guardian-dashboard',
-      component: GuardianDashboardPage,
+      component: AdminLayout,
       meta: { role: 'guardian' },
+      children: [
+        {
+          path: '',
+          name: 'guardian-dashboard',
+          component: GuardianDashboardPage,
+          meta: { role: 'guardian' },
+        }
+      ],
     },
     {
       path: '/:pathMatch(.*)*',
