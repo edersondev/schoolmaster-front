@@ -18,22 +18,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: PublicLayout,
+      component: HomePage,
       meta: { role: 'shared' },
-      children: [
-        {
-          path: '',
-          name: 'home',
-          component: HomePage,
-          meta: { role: 'shared' },
-        },
-        {
-          path: ':pathMatch(.*)*',
-          name: 'not-found',
-          component: NotFoundPage,
-          meta: { role: 'shared' },
-        },
-      ],
     },
     {
       path: '/admin',
@@ -123,6 +109,12 @@ const router = createRouter({
       name: 'guardian-dashboard',
       component: GuardianDashboardPage,
       meta: { role: 'guardian' },
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: NotFoundPage,
+      meta: { role: 'shared' },
     },
   ],
 })
