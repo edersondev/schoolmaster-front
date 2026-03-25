@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue'
 import { HomeFilled, Notebook, User, UserFilled } from '@element-plus/icons-vue'
 
 const { collapsed } = defineProps({
@@ -12,21 +11,27 @@ const { collapsed } = defineProps({
 const menuItems = [
   { index: 'dashboard', label: 'Dashboard', icon: HomeFilled },
   { index: 'students', label: 'Students', icon: User },
-  { index: 'classes', label: 'Classes', icon: Notebook },
+  {
+    index: 'classes',
+    label: 'Classes',
+    icon: Notebook,
+    children: [
+      {
+        index: 'classes/programs',
+        label: 'Programs',
+        children: [
+          { index: 'classes/programs/schedule', label: 'Schedule' },
+          { index: 'classes/programs/subjects', label: 'Subjects' },
+        ],
+      },
+      { index: 'classes/assignments', label: 'Assignments' },
+    ],
+  },
   { index: 'staff', label: 'Staff', icon: UserFilled },
 ]
 
-const menuItemClass = computed(() =>
-  collapsed
-    ? '!h-12 !w-12 !justify-center !rounded-xl !px-0 hover:!bg-slate-50'
-    : '!h-12 !rounded-xl !px-4 !text-sm hover:!bg-slate-50'
-)
-
-const dashboardClass = computed(() =>
-  collapsed
-    ? '!h-12 !w-12 !justify-center !rounded-xl !px-0 !bg-white !shadow-sm'
-    : '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white !shadow-sm'
-)
+const menuItemClass = '!h-12 !rounded-xl !text-sm'
+const dashboardClass = '!h-12 !rounded-xl !px-4 !text-sm !font-medium !bg-white !shadow-sm'
 </script>
 
 <template>
@@ -46,29 +51,55 @@ const dashboardClass = computed(() =>
       <ElMenu
         class="border-0 !border-r-0 bg-transparent"
         background-color="transparent"
-        text-color="#64748b"
         active-text-color="#0f172a"
+        :collapse="collapsed"
         :default-active="'dashboard'"
       >
-        <ElMenuItem
-          v-for="item in menuItems"
-          :key="item.index"
-          :index="item.index"
-          :class="item.index === 'dashboard' ? dashboardClass : menuItemClass"
-        >
-          <ElTooltip
-            :disabled="!collapsed"
-            :content="item.label"
-            placement="right"
-          >
-            <div class="flex items-center gap-3" :class="collapsed ? 'justify-center' : ''">
+        <template v-for="item in menuItems" :key="item.index">
+          <ElSubMenu v-if="item.children" :index="item.index">
+            <template #title>
               <ElIcon class="text-base">
                 <component :is="item.icon" />
               </ElIcon>
-              <span v-if="!collapsed">{{ item.label }}</span>
-            </div>
-          </ElTooltip>
-        </ElMenuItem>
+              <span>{{ item.label }}</span>
+            </template>
+
+            <template v-for="child in item.children" :key="child.index">
+              <ElSubMenu v-if="child.children" :index="child.index">
+                <template #title>
+                  <span>{{ child.label }}</span>
+                </template>
+                <ElMenuItem
+                  v-for="leaf in child.children"
+                  :key="leaf.index"
+                  :index="leaf.index"
+                  :class="menuItemClass"
+                >
+                  {{ leaf.label }}
+                </ElMenuItem>
+              </ElSubMenu>
+
+              <ElMenuItem
+                v-else
+                :index="child.index"
+                :class="menuItemClass"
+              >
+                {{ child.label }}
+              </ElMenuItem>
+            </template>
+          </ElSubMenu>
+
+          <ElMenuItem
+            v-else
+            :index="item.index"
+            :class="item.index === 'dashboard' ? dashboardClass : menuItemClass"
+          >
+            <ElIcon class="text-base">
+              <component :is="item.icon" />
+            </ElIcon>
+            <span>{{ item.label }}</span>
+          </ElMenuItem>
+        </template>
       </ElMenu>
     </div>
 
