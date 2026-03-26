@@ -18,13 +18,4 @@ export const adminSidebarMenu = [
     ],
   },
   { index: '/admin/staff', label: 'Staff', icon: 'UserFilled' },
-  {
-    index: '/admin/account',
-    label: 'Account',
-    icon: 'User',
-    children: [
-      { index: '/admin/account/edit-profile', label: 'Edit Profile' },
-      { index: '/admin/account/settings', label: 'Account Settings' },
-    ],
-  },
 ]

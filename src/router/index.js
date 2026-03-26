@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import AdminLayout from '@/components/admin/AdminLayout.vue'
-import PublicLayout from '@/components/layouts/PublicLayout.vue'
 import HomePage from '@/pages/HomePage.vue'
 import NotFoundPage from '@/pages/NotFoundPage.vue'
 import AccountSettingsPage from '@/pages/account/AccountSettingsPage.vue'
@@ -20,6 +19,25 @@ const router = createRouter({
       path: '/',
       component: HomePage,
       meta: { role: 'shared' },
+    },
+    {
+      path: '/account',
+      component: AdminLayout,
+      meta: { role: 'account' },
+      children: [
+        {
+          path: '',
+          name: 'account-edit-profile',
+          component: EditProfilePage,
+          meta: { role: 'admin', title: 'Edit Profile' },
+        },
+        {
+          path: 'settings',
+          name: 'account-settings',
+          component: AccountSettingsPage,
+          meta: { role: 'admin', title: 'Account Settings' },
+        },
+      ],
     },
     {
       path: '/admin',
@@ -71,18 +89,6 @@ const router = createRouter({
           name: 'admin-staff',
           component: AdminSectionPage,
           meta: { role: 'admin', title: 'Staff' },
-        },
-        {
-          path: 'account/edit-profile',
-          name: 'account-edit-profile',
-          component: EditProfilePage,
-          meta: { role: 'admin', title: 'Edit Profile' },
-        },
-        {
-          path: 'account/settings',
-          name: 'account-settings',
-          component: AccountSettingsPage,
-          meta: { role: 'admin', title: 'Account Settings' },
         },
       ],
     },
