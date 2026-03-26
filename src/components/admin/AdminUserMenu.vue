@@ -1,7 +1,9 @@
 <script setup>
 import { computed, shallowRef } from 'vue'
+import { useRouter } from 'vue-router'
 import { ArrowDown, ArrowUp, Avatar, Help, Setting, SwitchButton, User } from '@element-plus/icons-vue'
 
+const router = useRouter()
 const isMenuOpen = shallowRef(false)
 
 const user = {
@@ -14,10 +16,20 @@ const firstName = computed(() => user.name.split(' ')[0] || user.name)
 const handleVisibleChange = (visible) => {
   isMenuOpen.value = visible
 }
+
+const handleCommand = (command) => {
+  if (!command) return
+  router.push({ name: command })
+}
 </script>
 
 <template>
-  <ElDropdown trigger="click" placement="bottom-end" @visible-change="handleVisibleChange">
+  <ElDropdown
+    trigger="click"
+    placement="bottom-end"
+    @visible-change="handleVisibleChange"
+    @command="handleCommand"
+  >
     <ElButton
       class="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm shadow-sm"
       plain
@@ -43,7 +55,7 @@ const handleVisibleChange = (visible) => {
           </div>
         </ElDropdownItem>
 
-        <ElDropdownItem>
+        <ElDropdownItem command="account-edit-profile">
           <span class="flex items-center gap-2 text-sm">
             <ElIcon class="text-base">
               <Avatar />
@@ -52,7 +64,7 @@ const handleVisibleChange = (visible) => {
           </span>
         </ElDropdownItem>
 
-        <ElDropdownItem>
+        <ElDropdownItem command="account-settings">
           <span class="flex items-center gap-2 text-sm">
             <ElIcon class="text-base">
               <Setting />
