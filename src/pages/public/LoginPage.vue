@@ -1,11 +1,22 @@
 <script setup>
-import { reactive, shallowRef } from 'vue'
+import { computed, reactive, shallowRef } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 import PublicLayout from '@/components/layouts/PublicLayout.vue'
+import { getRoleHome } from '@/router/roleHomeMap'
+import { useAuthStore } from '@/stores/authStore'
 
 const formRef = shallowRef(null)
-const isSubmitting = shallowRef(false)
-const isSuccess = shallowRef(false)
+const submitError = shallowRef(null)
+const fieldErrors = reactive({
+  email: '',
+  password: '',
+})
+const router = useRouter()
+const authStore = useAuthStore()
+
+const isSubmitting = computed(() => authStore.loading)
 
 const form = reactive({
   email: '',
@@ -23,7 +34,9 @@ const rules = {
 const handleSubmit = async () => {
   if (!formRef.value) return
 
-  isSuccess.value = false
+  submitError.value = null
+  fieldErrors.email = ''
+  fieldErrors.password = ''
 
   try {
     await formRef.value.validate()
@@ -31,11 +44,29 @@ const handleSubmit = async () => {
     return
   }
 
-  isSubmitting.value = true
-  await new Promise((resolve) => setTimeout(resolve, 400))
-  isSubmitting.value = false
-  isSuccess.value = true
-  formRef.value.resetFields()
+  try {
+    const session = await authStore.login({
+      email: form.email,
+      password: form.password,
+    })
+
+    formRef.value.resetFields()
+
+    const nextPath = getRoleHome(session?.user?.role)
+    ElMessage.success('Welcome back!')
+    await router.push(nextPath)
+  } catch (error) {
+    if (error?.status === 422 && error?.data?.errors) {
+      fieldErrors.email = error.data.errors.email?.[0] || ''
+      fieldErrors.password = error.data.errors.password?.[0] || ''
+      submitError.value = error?.message || 'Please check the highlighted fields.'
+      ElMessage.error(submitError.value)
+      return
+    }
+
+    submitError.value = error?.message || authStore.error || 'Unable to sign in.'
+    ElMessage.error(submitError.value)
+  }
 }
 </script>
 
@@ -50,11 +81,11 @@ const handleSubmit = async () => {
         </header>
 
         <ElForm ref="formRef" :model="form" :rules="rules" label-position="top" class="space-y-4">
-          <ElFormItem label="Email" prop="email">
+          <ElFormItem label="Email" prop="email" :error="fieldErrors.email">
             <ElInput v-model="form.email" placeholder="you@example.com" size="large" />
           </ElFormItem>
 
-          <ElFormItem label="Password" prop="password">
+          <ElFormItem label="Password" prop="password" :error="fieldErrors.password">
             <ElInput v-model="form.password" type="password" placeholder="Enter your password" size="large" show-password />
           </ElFormItem>
 
@@ -63,8 +94,8 @@ const handleSubmit = async () => {
           </ElButton>
         </ElForm>
 
-        <div v-if="isSuccess" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          You are signed in. Welcome back!
+        <div v-if="submitError" class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          {{ submitError }}
         </div>
 
         <div class="flex flex-col items-center gap-2 text-sm text-[color:var(--color-muted)]">
