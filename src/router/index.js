@@ -7,6 +7,7 @@ import publicRoutes from '@/router/routes/public'
 import schoolAdminRoutes from '@/router/routes/schoolAdmin'
 import studentRoutes from '@/router/routes/student'
 import teacherRoutes from '@/router/routes/teacher'
+import { registerAuthGuard } from '@/router/guards/authGuard'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,5 +21,7 @@ const router = createRouter({
     ...guardianRoutes,
   ],
 })
+
+registerAuthGuard(router)
 
 export default router
