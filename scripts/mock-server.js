@@ -66,6 +66,7 @@ server.use(
   cors({
     origin: APP_ORIGIN || true,
     credentials: true,
+    allowedHeaders: ['Authorization', 'Content-Type'],
   })
 )
 server.use(API_PREFIX, json())
