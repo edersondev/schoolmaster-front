@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/authStore'
 const router = useRouter()
 const authStore = useAuthStore()
 const isMenuOpen = shallowRef(false)
+const SIGN_OUT_COMMAND = 'sign-out'
 
 const user = computed(() => ({
   name: authStore.user?.name || 'User',
@@ -22,8 +23,15 @@ const handleVisibleChange = (visible) => {
   isMenuOpen.value = visible
 }
 
-const handleCommand = (command) => {
+const handleCommand = async (command) => {
   if (!command) return
+
+  if (command === SIGN_OUT_COMMAND) {
+    await authStore.logout()
+    await router.push({ name: 'login' })
+    return
+  }
+
   router.push({ name: command })
 }
 </script>
@@ -87,7 +95,7 @@ const handleCommand = (command) => {
           </span>
         </ElDropdownItem>
 
-        <ElDropdownItem divided>
+        <ElDropdownItem divided :command="SIGN_OUT_COMMAND">
           <span class="flex items-center gap-2 text-sm">
             <ElIcon class="text-base">
               <SwitchButton />

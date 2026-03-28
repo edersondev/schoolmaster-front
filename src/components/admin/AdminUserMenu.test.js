@@ -1,12 +1,14 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 
 import { baseAdminStubs } from '@/__tests__/adminTestUtils'
 
 const pushMock = vi.fn()
+const logoutMock = vi.hoisted(() => vi.fn())
 const authStoreState = vi.hoisted(() => ({
   user: null,
+  logout: logoutMock,
 }))
 
 vi.mock('vue-router', () => ({
@@ -36,6 +38,8 @@ const ArrowDownStub = defineComponent({
 describe('AdminUserMenu', () => {
   beforeEach(() => {
     pushMock.mockClear()
+    logoutMock.mockReset()
+    logoutMock.mockResolvedValue(undefined)
     authStoreState.user = {
       id: 1,
       name: 'Jordan Lee',
@@ -110,5 +114,19 @@ describe('AdminUserMenu', () => {
     dropdown.vm.$emit('command', '')
 
     expect(pushMock).not.toHaveBeenCalled()
+  })
+
+  it('signs out and redirects to login', async () => {
+    const wrapper = mount(AdminUserMenu, {
+      global: {
+        stubs: baseAdminStubs,
+      },
+    })
+
+    wrapper.findComponent({ name: 'ElDropdown' }).vm.$emit('command', 'sign-out')
+    await flushPromises()
+
+    expect(logoutMock).toHaveBeenCalledTimes(1)
+    expect(pushMock).toHaveBeenCalledWith({ name: 'login' })
   })
 })
