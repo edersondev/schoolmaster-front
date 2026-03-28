@@ -2,16 +2,21 @@
 import { computed, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowDown, ArrowUp, Avatar, Help, Setting, SwitchButton, User } from '@element-plus/icons-vue'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const isMenuOpen = shallowRef(false)
 
-const user = {
-  name: 'Jordan Lee',
-  email: 'jordan.lee@schoolmaster.test',
-}
+const user = computed(() => ({
+  name: authStore.user?.name || 'User',
+  email: authStore.user?.email || '',
+}))
 
-const firstName = computed(() => user.name.split(' ')[0] || user.name)
+const firstName = computed(() => {
+  const name = user.value.name.trim()
+  return name.split(/\s+/)[0] || name
+})
 
 const handleVisibleChange = (visible) => {
   isMenuOpen.value = visible

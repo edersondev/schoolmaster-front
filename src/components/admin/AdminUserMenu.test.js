@@ -5,9 +5,16 @@ import { defineComponent, h } from 'vue'
 import { baseAdminStubs } from '@/__tests__/adminTestUtils'
 
 const pushMock = vi.fn()
+const authStoreState = vi.hoisted(() => ({
+  user: null,
+}))
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: pushMock }),
+}))
+
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: () => authStoreState,
 }))
 
 import AdminUserMenu from './AdminUserMenu.vue'
@@ -29,6 +36,11 @@ const ArrowDownStub = defineComponent({
 describe('AdminUserMenu', () => {
   beforeEach(() => {
     pushMock.mockClear()
+    authStoreState.user = {
+      id: 1,
+      name: 'Jordan Lee',
+      email: 'jordan.lee@schoolmaster.test',
+    }
   })
 
   it('renders the user details', () => {
@@ -57,6 +69,22 @@ describe('AdminUserMenu', () => {
 
     expect(pushMock).toHaveBeenCalledWith({ name: 'account-settings' })
     expect(wrapper.text()).toContain('Jordan')
+  })
+
+  it('falls back to a generic name when user name is missing', () => {
+    authStoreState.user = {
+      id: 1,
+      email: 'jordan.lee@schoolmaster.test',
+    }
+
+    const wrapper = mount(AdminUserMenu, {
+      global: {
+        stubs: baseAdminStubs,
+      },
+    })
+
+    expect(wrapper.text()).toContain('User')
+    expect(wrapper.text()).toContain('jordan.lee@schoolmaster.test')
   })
 
   it('handles dropdown visibility and ignores empty commands', async () => {
