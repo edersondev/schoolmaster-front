@@ -8,10 +8,9 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const appUrl = env.VITE_APP_URL
-  const parsedUrl = appUrl ? new URL(appUrl) : null
-  const host = parsedUrl?.hostname || 'localhost'
-  const port = parsedUrl?.port ? Number(parsedUrl.port) : 5173
+  const appHost = env.VITE_APP_HOST?.trim() || 'localhost'
+  const host = appHost.replace(/^https?:\/\//, '').split('/')[0] || 'localhost'
+  const port = 5173
 
   return {
     plugins: [
