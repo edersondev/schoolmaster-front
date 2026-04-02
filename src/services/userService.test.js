@@ -30,9 +30,18 @@ describe('userService', () => {
     const userService = (await import('@/services/userService')).default
     apiPut.mockResolvedValue({ data: { id: 1, name: 'Updated' } })
 
-    const result = await userService.updateProfile({ name: 'Updated' })
+    const result = await userService.updateProfile({ id: 1, name: 'Updated' })
 
-    expect(apiPut).toHaveBeenCalledWith('/user', { name: 'Updated' })
+    expect(apiPut).toHaveBeenCalledWith('/users/1', { name: 'Updated' })
     expect(result).toEqual({ id: 1, name: 'Updated' })
+  })
+
+  it('requires user id to update the profile', async () => {
+    const userService = (await import('@/services/userService')).default
+
+    await expect(userService.updateProfile({ name: 'Updated' })).rejects.toThrow(
+      'User ID is required to update profile.'
+    )
+    expect(apiPut).not.toHaveBeenCalled()
   })
 })

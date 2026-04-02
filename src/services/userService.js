@@ -6,7 +6,14 @@ const getProfile = async () => {
 }
 
 const updateProfile = async (payload) => {
-  const { data } = await api.put('/user', payload)
+  const userId = payload?.id
+  if (!userId) {
+    throw new Error('User ID is required to update profile.')
+  }
+
+  const { id, ...profilePayload } = payload || {}
+
+  const { data } = await api.put(`/users/${userId}`, profilePayload)
   return data
 }
 

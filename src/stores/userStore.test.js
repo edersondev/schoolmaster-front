@@ -61,4 +61,26 @@ describe('userStore', () => {
     expect(store.error).toBe('Nope')
     expect(store.loading).toBe(false)
   })
+
+  it('uses default message when profile fetch error has no message', async () => {
+    const { useUserStore } = await import('@/stores/userStore')
+    const store = useUserStore()
+    getProfileMock.mockRejectedValue({})
+
+    await expect(store.fetchProfile()).rejects.toEqual({})
+
+    expect(store.error).toBe('Unable to load profile.')
+    expect(store.loading).toBe(false)
+  })
+
+  it('uses default message when profile update error has no message', async () => {
+    const { useUserStore } = await import('@/stores/userStore')
+    const store = useUserStore()
+    updateProfileMock.mockRejectedValue({})
+
+    await expect(store.updateProfile({ name: 'Bad' })).rejects.toEqual({})
+
+    expect(store.error).toBe('Unable to update profile.')
+    expect(store.loading).toBe(false)
+  })
 })
