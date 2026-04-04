@@ -9,14 +9,15 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "mock:api": "node scripts/mock-server.js",
-    "smoke:api": "node scripts/smoke-test.js"
+    "mock:api": "node mock/server.js",
+    "smoke:api": "node mock/smoke-test.js"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
     "@tailwindcss/vite": "^4.2.1",
     "@vueuse/core": "^14.2.1",
     "axios": "^1.13.6",
+    "dotenv": "^17.4.0",
     "element-plus": "^2.13.5",
     "pinia": "^3.0.4",
     "tailwindcss": "^4.2.1",
