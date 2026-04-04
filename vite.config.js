@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const appHost = env.VITE_APP_HOST?.trim() || 'localhost'
   const host = appHost.replace(/^https?:\/\//, '').split('/')[0] || 'localhost'
-  const port = 5173
+  const port = env.VITE_APP_PORT?.trim() || 5173
 
   return {
     plugins: [
