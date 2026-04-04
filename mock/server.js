@@ -23,12 +23,8 @@ server.use(createAuthRoutes(router, PATH_PREFIX))
 server.use((req, res, next) => {
   console.log(`[MOCK API] ${req.method} ${req.path}`)
 
-  if (req.method === 'PUT' && req.path.startsWith('/users/')) {
-    const id = req.path.split('/').pop()
-
-    console.log('Updating user:', id)
-
-    req.body.updatedAt = new Date().toISOString()
+  if (req.method === 'PUT' || req.method === 'PATCH' || req.method === 'DELETE') {
+    return res.status(204).end()
   }
 
   next()
