@@ -20,11 +20,80 @@ const getAuthToken = (req) => {
   return header.replace('Bearer ', '').trim()
 }
 
+const onlyDigits = (value) => String(value || '').replace(/\D/g, '')
+
+const normalizeRegisterPayload = (payload = {}) => ({
+  name: String(payload.name || '').trim(),
+  email: String(payload.email || '').trim(),
+  password: String(payload.password || ''),
+  cpf: onlyDigits(payload.cpf),
+  phone: onlyDigits(payload.phone),
+})
+
 export default function createAuthRoutes(dbRouter, pathPrefix = '') {
-  const users = dbRouter.db.get('users').value()
+  const usersCollection = () => dbRouter.db.get('users')
+  const getUsers = () => usersCollection().value()
+
+  router.get(`${pathPrefix}/register/cpf-availability`, (req, res) => {
+    try {
+      const cpf = onlyDigits(req.query?.cpf)
+
+      const existingUser = getUsers().find((item) => item.cpf === cpf)
+      if (existingUser) {
+        throw {
+          code: 422,
+          message: 'CPF is already registered.',
+          errors: {
+            cpf: ['CPF is already registered.'],
+          },
+        }
+      }
+
+      return res.status(200).json({
+        available: true,
+        message: 'CPF can be registered.',
+      })
+    } catch (error) {
+      console.error('Error in /register/cpf-availability:', error)
+      const response = {
+        message: error.message ?? 'Internal Server Error',
+        errors: error.errors ?? undefined,
+      }
+      return res.status(error.code ?? 500).json(response)
+    }
+  })
+
+  router.post(`${pathPrefix}/register`, (req, res) => {
+    try {
+      const payload = normalizeRegisterPayload(req.body)
+
+      const users = getUsers()
+      const cpfTaken = users.some((item) => item.cpf === payload.cpf)
+
+      if (cpfTaken) {
+        throw {
+          code: 422,
+          message: 'CPF is already registered.',
+          errors: {
+            cpf: ['CPF is already registered.'],
+          },
+        }
+      }
+
+      return res.status(201).json({
+        message: 'Account created successfully. Your registration will be active soon.',
+      })
+    } catch (error) {
+      console.error('Error in /register:', error)
+      const response = {
+        message: error.message ?? 'Internal Server Error',
+        errors: error.errors ?? undefined,
+      }
+      return res.status(error.code ?? 500).json(response)
+    }
+  })
 
   router.post(`${pathPrefix}/login`, (req, res) => {
-
     try {
       const { email, password } = req.body || {}
 
@@ -39,7 +108,7 @@ export default function createAuthRoutes(dbRouter, pathPrefix = '') {
         }
       }
 
-      const user = users.find((item) => item.email === email)
+      const user = getUsers().find((item) => item.email === email)
 
       if (!user || user.password !== password) {
         throw {
@@ -50,7 +119,7 @@ export default function createAuthRoutes(dbRouter, pathPrefix = '') {
 
       const token = generateToken(user)
       tokenStore.set(token, user.id)
-  
+
       return res.status(200).json({
         token,
         token_type: 'Bearer',
@@ -80,7 +149,7 @@ export default function createAuthRoutes(dbRouter, pathPrefix = '') {
         throw unauthenticatedError
       }
 
-      const user = users.find(item => item.id === userId)
+      const user = getUsers().find((item) => item.id === userId)
       if (!user) {
         throw unauthenticatedError
       }

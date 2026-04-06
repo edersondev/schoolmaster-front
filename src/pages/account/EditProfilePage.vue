@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, reactive, shallowRef } from 'vue'
 import { ElMessage } from 'element-plus'
+import { vMaska } from "maska/vue"
 
 import { useAuthStore } from '@/stores/authStore'
 import { useUserStore } from '@/stores/userStore'
@@ -12,7 +13,24 @@ const userStore = useUserStore()
 const form = reactive({
   name: '',
   email: '',
+  cpf: '',
+  phone: '',
 })
+const phoneUnmasked = shallowRef('')
+
+const validatePhoneFormat = (_, value, callback) => {
+  if (!value) {
+    callback(new Error('Phone is required.'))
+    return
+  }
+
+  if (phoneUnmasked.value.length !== 11) {
+    callback(new Error('Phone must have 11 digits.'))
+    return
+  }
+
+  callback()
+}
 
 const rules = {
   name: [{ required: true, message: 'Name is required.', trigger: 'blur' }],
@@ -20,6 +38,7 @@ const rules = {
     { required: true, message: 'Email is required.', trigger: 'blur' },
     { type: 'email', message: 'Please enter a valid email address.', trigger: 'blur' },
   ],
+  phone: [{ validator: validatePhoneFormat, trigger: ['blur', 'change'] }],
 }
 
 const isSubmitting = computed(() => userStore.loading)
@@ -30,6 +49,11 @@ const hydrateForm = (profile) => {
 
   form.name = profile.name || ''
   form.email = profile.email || ''
+  form.cpf = profile.cpf || ''
+  form.phone = profile.phone || ''
+  form.cpf = profile.cpf || ''
+  form.phone = profile.phone || ''
+  phoneUnmasked.value = profile.phone || ''
 }
 
 onMounted(async () => {
@@ -61,6 +85,11 @@ onMounted(async () => {
   }
 })
 
+const vMaskaPhoneOptions = {
+  onMaska: (detail) => phoneUnmasked.value = detail?.unmasked,
+  mask: '(##) #####-####',
+}
+
 const handleSave = async (event) => {
 
   event?.preventDefault?.()
@@ -84,6 +113,7 @@ const handleSave = async (event) => {
       id: currentUserId.value,
       name: form.name.trim(),
       email: form.email.trim(),
+      phone: phoneUnmasked.value,
     }
 
     const updatedProfile = await userStore.updateProfile(payload)
@@ -119,6 +149,27 @@ const handleSave = async (event) => {
 
       <ElFormItem label="Email" prop="email">
         <ElInput v-model="form.email" placeholder="you@example.com" size="large" />
+      </ElFormItem>
+
+      <ElFormItem label="CPF" prop="cpf">
+        <ElInput
+          v-maska="'###.###.###-##'"
+          v-model="form.cpf"
+          placeholder="000.000.000-00"
+          size="large"
+          maxlength="14"
+          readonly
+        />
+      </ElFormItem>
+
+      <ElFormItem label="Phone" prop="phone">
+        <ElInput
+          v-maska="vMaskaPhoneOptions"
+          v-model="form.phone"
+          placeholder="(00) 00000-0000"
+          size="large"
+          maxlength="15"
+        />
       </ElFormItem>
 
       <div class="flex justify-end pt-2">

@@ -2,6 +2,7 @@ import HomePage from '@/pages/HomePage.vue'
 import ForgotPasswordPage from '@/pages/public/ForgotPasswordPage.vue'
 import LoginPage from '@/pages/public/LoginPage.vue'
 import RegisterPage from '@/pages/public/RegisterPage.vue'
+import RegisterPendingPage from '@/pages/public/RegisterPendingPage.vue'
 import NotFoundPage from '@/pages/NotFoundPage.vue'
 
 const publicRoutes = [
@@ -20,6 +21,12 @@ const publicRoutes = [
     path: '/register',
     name: 'register',
     component: RegisterPage,
+    meta: { role: 'shared' },
+  },
+  {
+    path: '/register/pending',
+    name: 'register-pending',
+    component: RegisterPendingPage,
     meta: { role: 'shared' },
   },
   {

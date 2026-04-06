@@ -10,8 +10,18 @@ export const PublicLayoutStub = defineComponent({
 
 export const ElFormItemStub = defineComponent({
   name: 'ElFormItem',
-  setup(_, { slots }) {
-    return () => h('div', { 'data-testid': 'form-item' }, slots.default?.())
+  props: {
+    error: {
+      type: String,
+      default: '',
+    },
+  },
+  setup(props, { slots }) {
+    return () =>
+      h('div', { 'data-testid': 'form-item' }, [
+        slots.default?.(),
+        props.error ? h('p', { 'data-testid': 'form-item-error' }, props.error) : null,
+      ])
   },
 })
 
@@ -22,13 +32,29 @@ export const ElInputStub = defineComponent({
       type: String,
       default: '',
     },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
-  emits: ['update:modelValue'],
-  setup(props, { emit }) {
+  emits: ['update:modelValue', 'input', 'blur', 'maska'],
+  setup(props, { attrs, emit }) {
     return () =>
       h('input', {
+        ...attrs,
         value: props.modelValue,
-        onInput: (event) => emit('update:modelValue', event.target.value),
+        readonly: props.readonly,
+        onInput: (event) => {
+          const unmasked = String(event.target.value || '').replace(/\D/g, '')
+          emit('update:modelValue', event.target.value)
+          emit('input', event.target.value)
+          emit('maska', {
+            masked: event.target.value,
+            unmasked,
+            completed: unmasked.length === 11,
+          })
+        },
+        onBlur: () => emit('blur'),
       })
   },
 })
@@ -97,6 +123,27 @@ export const createFormStubs = ({ validateResult } = {}) => {
     stubs: {
       ...baseStubs,
       ElForm: ElFormStub,
+    },
+    directives: {
+      maska: {
+        mounted(el, binding) {
+          const updateTarget = (value) => {
+            if (!binding.arg || !binding.instance) return
+
+            const unmasked = String(value || '').replace(/\D/g, '')
+            const resolvedValue = binding.modifiers.unmasked
+              ? unmasked
+              : binding.modifiers.completed
+                ? unmasked.length === 11
+                : String(value || '')
+
+            binding.instance[binding.arg] = resolvedValue
+          }
+
+          updateTarget(el.value)
+          el.addEventListener('input', (event) => updateTarget(event.target.value))
+        },
+      },
     },
     validateMock,
     resetFieldsMock,

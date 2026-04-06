@@ -5,6 +5,18 @@ const login = async (credentials) => {
   return data
 }
 
+const register = async (payload) => {
+  const { data } = await api.post('/register', payload)
+  return data
+}
+
+const checkCpfAvailability = async (cpf) => {
+  const { data } = await api.get('/register/cpf-availability', {
+    params: { cpf },
+  })
+  return data
+}
+
 const logout = async () => {
   const { data } = await api.post('/logout')
   return data
@@ -17,6 +29,8 @@ const me = async () => {
 
 export default {
   login,
+  register,
+  checkCpfAvailability,
   logout,
   me,
 }
