@@ -43,31 +43,14 @@ describe('RegisterPage', () => {
 
     expect(wrapper.text()).toContain('Create your account')
     expect(wrapper.text()).toContain('Set up your profile in a minute.')
-    expect(wrapper.findAll('input')).toHaveLength(5)
+    expect(wrapper.findAll('input')).toHaveLength(6)
   })
 
-  it('masks cpf and checks availability when cpf is complete', async () => {
-    const { stubs, directives } = createFormStubs()
-    const wrapper = mount(RegisterPage, {
-      global: {
-        stubs,
-        directives,
-      },
-    })
-
-    const cpfInput = wrapper.findAll('input')[2]
-    await cpfInput.setValue('12345678901')
-    await flushPromises()
-
-    expect(checkCpfAvailabilityMock).toHaveBeenCalledWith('12345678901')
-    expect(wrapper.text()).toContain('CPF can be registered.')
-  })
-
-  it('shows cpf error feedback when cpf already exists', async () => {
-    const { stubs, directives } = createFormStubs()
-    checkCpfAvailabilityMock.mockRejectedValue({
+  it('shows cpf error feedback when backend returns validation error', async () => {
+    const { stubs, directives, validateMock } = createFormStubs()
+    registerMock.mockRejectedValue({
       status: 422,
-      message: 'CPF is already registered.',
+      message: 'Validation failed.',
       data: {
         errors: {
           cpf: ['CPF is already registered.'],
@@ -82,10 +65,19 @@ describe('RegisterPage', () => {
       },
     })
 
-    const cpfInput = wrapper.findAll('input')[2]
+    const [nameInput, emailInput, cpfInput, phoneInput, passwordInput, confirmPasswordInput] = wrapper.findAll('input')
+    await nameInput.setValue('Jane Doe')
+    await emailInput.setValue('jane@schoolmaster.test')
     await cpfInput.setValue('12345678901')
+    await phoneInput.setValue('11999990000')
+    await passwordInput.setValue('password123')
+    await confirmPasswordInput.setValue('password123')
+
+    await wrapper.find('button').trigger('click')
     await flushPromises()
 
+    expect(validateMock).toHaveBeenCalled()
+    expect(registerMock).toHaveBeenCalledTimes(1)
     expect(wrapper.text()).toContain('CPF is already registered.')
   })
 
@@ -103,12 +95,13 @@ describe('RegisterPage', () => {
       },
     })
 
-    const [nameInput, emailInput, cpfInput, phoneInput, passwordInput] = wrapper.findAll('input')
+    const [nameInput, emailInput, cpfInput, phoneInput, passwordInput, confirmPasswordInput] = wrapper.findAll('input')
     await nameInput.setValue('Jane Doe')
     await emailInput.setValue('jane@schoolmaster.test')
     await cpfInput.setValue('12345678901')
     await phoneInput.setValue('11999990000')
     await passwordInput.setValue('password123')
+    await confirmPasswordInput.setValue('password123')
 
     await wrapper.find('button').trigger('click')
     await flushPromises()
@@ -118,6 +111,7 @@ describe('RegisterPage', () => {
       name: 'Jane Doe',
       email: 'jane@schoolmaster.test',
       password: 'password123',
+      confirm_password: 'password123',
       cpf: '12345678901',
       phone: '11999990000',
     })
