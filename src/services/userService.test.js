@@ -2,11 +2,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const apiGet = vi.hoisted(() => vi.fn())
 const apiPut = vi.hoisted(() => vi.fn())
+const apiPost = vi.hoisted(() => vi.fn())
+const apiDelete = vi.hoisted(() => vi.fn())
 
 vi.mock('@/services/api', () => ({
   default: {
     get: apiGet,
     put: apiPut,
+    post: apiPost,
+    delete: apiDelete,
   },
 }))
 
@@ -14,6 +18,8 @@ describe('userService', () => {
   beforeEach(() => {
     apiGet.mockReset()
     apiPut.mockReset()
+    apiPost.mockReset()
+    apiDelete.mockReset()
   })
 
   it('fetches the profile', async () => {
@@ -43,5 +49,55 @@ describe('userService', () => {
       'User ID is required to update profile.'
     )
     expect(apiPut).not.toHaveBeenCalled()
+  })
+
+  it('fetches all users', async () => {
+    const userService = (await import('@/services/userService')).default
+    apiGet.mockResolvedValue({ data: [{ id: 1 }, { id: 2 }] })
+
+    const users = await userService.getAllUsers()
+
+    expect(apiGet).toHaveBeenCalledWith('/users')
+    expect(users).toEqual([{ id: 1 }, { id: 2 }])
+  })
+
+  it('fetches one user by id', async () => {
+    const userService = (await import('@/services/userService')).default
+    apiGet.mockResolvedValue({ data: { id: 7, name: 'Alice' } })
+
+    const user = await userService.getUserById(7)
+
+    expect(apiGet).toHaveBeenCalledWith('/users/7')
+    expect(user).toEqual({ id: 7, name: 'Alice' })
+  })
+
+  it('creates a user', async () => {
+    const userService = (await import('@/services/userService')).default
+    apiPost.mockResolvedValue({ data: { id: 11, name: 'New User' } })
+
+    const result = await userService.createUser({ name: 'New User' })
+
+    expect(apiPost).toHaveBeenCalledWith('/users', { name: 'New User' })
+    expect(result).toEqual({ id: 11, name: 'New User' })
+  })
+
+  it('updates a user and normalizes empty 204 response', async () => {
+    const userService = (await import('@/services/userService')).default
+    apiPut.mockResolvedValue({ data: '' })
+
+    const result = await userService.updateUser(11, { name: 'Edited' })
+
+    expect(apiPut).toHaveBeenCalledWith('/users/11', { name: 'Edited' })
+    expect(result).toBeNull()
+  })
+
+  it('deletes a user and normalizes empty 204 response', async () => {
+    const userService = (await import('@/services/userService')).default
+    apiDelete.mockResolvedValue({ data: '' })
+
+    const result = await userService.deleteUser(11)
+
+    expect(apiDelete).toHaveBeenCalledWith('/users/11')
+    expect(result).toBeNull()
   })
 })

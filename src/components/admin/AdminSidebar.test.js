@@ -21,6 +21,7 @@ describe('AdminSidebar', () => {
     })
 
     expect(wrapper.text()).toContain('Dashboard')
+    expect(wrapper.text()).toContain('Users')
     expect(wrapper.text()).toContain('Classes')
     expect(wrapper.text()).toContain('Programs')
     expect(wrapper.text()).toContain('Assignments')

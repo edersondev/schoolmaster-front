@@ -1,5 +1,5 @@
 <script setup>
-import { HomeFilled, Notebook, User, UserFilled } from '@element-plus/icons-vue'
+import { Avatar, HomeFilled, Notebook, User, UserFilled } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
 import { adminSidebarMenu } from './adminSidebarMenu'
 
@@ -13,6 +13,7 @@ const { collapsed } = defineProps({
 })
 
 const iconMap = {
+  Avatar,
   HomeFilled,
   Notebook,
   User,

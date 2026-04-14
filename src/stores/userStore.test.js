@@ -3,11 +3,21 @@ import { createPinia, setActivePinia } from 'pinia'
 
 const getProfileMock = vi.hoisted(() => vi.fn())
 const updateProfileMock = vi.hoisted(() => vi.fn())
+const getAllUsersMock = vi.hoisted(() => vi.fn())
+const getUserByIdMock = vi.hoisted(() => vi.fn())
+const createUserMock = vi.hoisted(() => vi.fn())
+const updateUserMock = vi.hoisted(() => vi.fn())
+const deleteUserMock = vi.hoisted(() => vi.fn())
 
 vi.mock('@/services/userService', () => ({
   default: {
     getProfile: getProfileMock,
     updateProfile: updateProfileMock,
+    getAllUsers: getAllUsersMock,
+    getUserById: getUserByIdMock,
+    createUser: createUserMock,
+    updateUser: updateUserMock,
+    deleteUser: deleteUserMock,
   },
 }))
 
@@ -16,6 +26,11 @@ describe('userStore', () => {
     setActivePinia(createPinia())
     getProfileMock.mockReset()
     updateProfileMock.mockReset()
+    getAllUsersMock.mockReset()
+    getUserByIdMock.mockReset()
+    createUserMock.mockReset()
+    updateUserMock.mockReset()
+    deleteUserMock.mockReset()
   })
 
   it('fetches the profile', async () => {
@@ -38,6 +53,80 @@ describe('userStore', () => {
 
     expect(profile).toEqual({ id: 1, name: 'Updated' })
     expect(store.profile).toEqual({ id: 1, name: 'Updated' })
+  })
+
+  it('fetches users list', async () => {
+    const { useUserStore } = await import('@/stores/userStore')
+    const store = useUserStore()
+    getAllUsersMock.mockResolvedValue([{ id: 1 }, { id: 2 }])
+
+    const users = await store.fetchUsers()
+
+    expect(users).toEqual([{ id: 1 }, { id: 2 }])
+    expect(store.users).toEqual([{ id: 1 }, { id: 2 }])
+  })
+
+  it('fetches one user by id', async () => {
+    const { useUserStore } = await import('@/stores/userStore')
+    const store = useUserStore()
+    getUserByIdMock.mockResolvedValue({ id: 8, name: 'User' })
+
+    const user = await store.fetchUserById(8)
+
+    expect(getUserByIdMock).toHaveBeenCalledWith(8)
+    expect(user).toEqual({ id: 8, name: 'User' })
+    expect(store.selectedUser).toEqual({ id: 8, name: 'User' })
+  })
+
+  it('creates a user and prepends it when API returns payload', async () => {
+    const { useUserStore } = await import('@/stores/userStore')
+    const store = useUserStore()
+    store.users = [{ id: 1, name: 'A' }]
+    createUserMock.mockResolvedValue({ id: 2, name: 'B' })
+
+    await store.createUser({ name: 'B' })
+
+    expect(store.users.map((user) => user.id)).toEqual([2, 1])
+  })
+
+  it('updates users list and selected user when update returns payload', async () => {
+    const { useUserStore } = await import('@/stores/userStore')
+    const store = useUserStore()
+    store.users = [{ id: 1, name: 'A' }, { id: 2, name: 'B' }]
+    updateUserMock.mockResolvedValue({ id: 2, name: 'B Updated' })
+
+    await store.updateUser(2, { name: 'B Updated' })
+
+    expect(store.users).toEqual([{ id: 1, name: 'A' }, { id: 2, name: 'B Updated' }])
+    expect(store.selectedUser).toEqual({ id: 2, name: 'B Updated' })
+  })
+
+  it('re-fetches users and selected user when update returns empty payload', async () => {
+    const { useUserStore } = await import('@/stores/userStore')
+    const store = useUserStore()
+    updateUserMock.mockResolvedValue(null)
+    getAllUsersMock.mockResolvedValue([{ id: 3, name: 'C' }])
+    getUserByIdMock.mockResolvedValue({ id: 3, name: 'C' })
+
+    await store.updateUser(3, { name: 'C' })
+
+    expect(getAllUsersMock).toHaveBeenCalledTimes(1)
+    expect(getUserByIdMock).toHaveBeenCalledWith(3)
+    expect(store.users).toEqual([{ id: 3, name: 'C' }])
+  })
+
+  it('deletes user and refreshes list when delete returns empty payload', async () => {
+    const { useUserStore } = await import('@/stores/userStore')
+    const store = useUserStore()
+    store.users = [{ id: 1 }, { id: 2 }]
+    deleteUserMock.mockResolvedValue(null)
+    getAllUsersMock.mockResolvedValue([{ id: 2 }])
+
+    await store.deleteUser(1)
+
+    expect(deleteUserMock).toHaveBeenCalledWith(1)
+    expect(getAllUsersMock).toHaveBeenCalledTimes(1)
+    expect(store.users).toEqual([{ id: 2 }])
   })
 
   it('handles profile fetch errors', async () => {

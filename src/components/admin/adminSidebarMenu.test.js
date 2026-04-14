@@ -24,6 +24,7 @@ describe('adminSidebarMenu', () => {
     expect(adminSidebarMenu.map((item) => item.index)).toEqual([
       '/admin',
       '/admin/students',
+      '/admin/users',
       '/admin/classes',
       '/admin/staff',
     ])

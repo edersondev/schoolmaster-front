@@ -1,6 +1,9 @@
 import AdminLayout from '@/components/admin/AdminLayout.vue'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage.vue'
 import AdminSectionPage from '@/pages/admin/AdminSectionPage.vue'
+import AdminUsersCreatePage from '@/pages/admin/AdminUsersCreatePage.vue'
+import AdminUsersEditPage from '@/pages/admin/AdminUsersEditPage.vue'
+import AdminUsersListPage from '@/pages/admin/AdminUsersListPage.vue'
 
 const adminRoutes = [
   {
@@ -19,6 +22,24 @@ const adminRoutes = [
         name: 'admin-students',
         component: AdminSectionPage,
         meta: { role: 'admin', title: 'Students' },
+      },
+      {
+        path: 'users',
+        name: 'admin-users',
+        component: AdminUsersListPage,
+        meta: { role: 'admin', title: 'Users' },
+      },
+      {
+        path: 'users/create',
+        name: 'admin-users-create',
+        component: AdminUsersCreatePage,
+        meta: { role: 'admin', title: 'Create User' },
+      },
+      {
+        path: 'users/:id/edit',
+        name: 'admin-users-edit',
+        component: AdminUsersEditPage,
+        meta: { role: 'admin', title: 'Edit User' },
       },
       {
         path: 'classes',

@@ -1,6 +1,7 @@
 export const adminSidebarMenu = [
   { index: '/admin', label: 'Dashboard', icon: 'HomeFilled' },
   { index: '/admin/students', label: 'Students', icon: 'User' },
+  { index: '/admin/users', label: 'Users', icon: 'Avatar' },
   {
     index: '/admin/classes',
     label: 'Classes',
