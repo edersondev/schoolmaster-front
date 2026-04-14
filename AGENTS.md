@@ -46,3 +46,8 @@
 ## Security & Configuration Tips
 - Node version is constrained by `package.json` `engines` (Node `^20.19.0` or `>=22.12.0`).
 - Avoid committing secrets; prefer environment variables for any future API keys.
+
+## JSON Server Guardrails
+- Keep JSON Server fixtures minimal: use a small dataset with only required fields and records.
+- For all JSON Server write methods, `POST`, `PATCH`, `PUT`, and `DELETE` must return HTTP `204` with an empty body by default.
+- Do not modify `db.json` unless the user explicitly asks for it.
