@@ -23,6 +23,19 @@ server.use(createAuthRoutes(router, PATH_PREFIX))
 server.use((req, res, next) => {
   console.log(`[MOCK API] ${req.method} ${req.path}`)
 
+  if (req.method === 'POST' && req.path === `${PATH_PREFIX}/users`) {
+    const users = router.db.get('users').value() || []
+    const lastId = users.reduce((maxId, user) => Math.max(maxId, Number(user?.id) || 0), 0)
+    const now = new Date().toISOString()
+
+    return res.status(201).json({
+      id: lastId + 1,
+      ...req.body,
+      created_at: now,
+      updated_at: now,
+    })
+  }
+
   if (req.method === 'PUT' || req.method === 'PATCH' || req.method === 'DELETE') {
     return res.status(204).end()
   }
