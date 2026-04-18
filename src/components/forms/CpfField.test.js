@@ -203,6 +203,22 @@ describe('CpfField', () => {
     expect(callback.mock.calls[0][0].message).toBe('CPF is already registered.')
   })
 
+  it('uses default validation message when cpf availability error has no details', async () => {
+    checkCpfAvailabilityMock.mockRejectedValue({})
+
+    const wrapper = mountCpfField({
+      modelValue: '123.456.789-01',
+      unmasked: '12345678901',
+    })
+    const validator = wrapper.findComponent(ElFormItemStub).props('rules')[0].validator
+    const callback = vi.fn()
+
+    await validator({}, '123.456.789-01', callback)
+
+    expect(callback).toHaveBeenCalledWith(expect.any(Error))
+    expect(callback.mock.calls[0][0].message).toBe('Unable to validate CPF.')
+  })
+
   it('does not attach validation rules when validate is false', () => {
     const wrapper = mountCpfField({
       validate: false,

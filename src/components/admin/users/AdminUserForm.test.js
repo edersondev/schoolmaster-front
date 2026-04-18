@@ -290,4 +290,77 @@ describe('AdminUserForm', () => {
     expect(submitEvents[0][0].cpf).toBeUndefined()
     expect(submitEvents[0][0].password).toBeUndefined()
   })
+
+  it('does not emit submit when form validation fails', async () => {
+    validateMock.mockRejectedValueOnce(new Error('invalid'))
+
+    const wrapper = mount(AdminUserForm, {
+      props: {
+        submitLabel: 'Create user',
+      },
+      global: {
+        directives: {
+          maska: {
+            mounted(el, binding) {
+              el.__maskaOnMaska = binding.value?.onMaska
+            },
+            updated(el, binding) {
+              el.__maskaOnMaska = binding.value?.onMaska
+            },
+          },
+        },
+        stubs: {
+          ElForm: ElFormStub,
+          ElFormItem: ElFormItemStub,
+          ElInput: ElInputStub,
+          ElSelect: ElSelectStub,
+          ElOption: ElOptionStub,
+          ElButton: ElButtonStub,
+          CpfField: CpfFieldStub,
+        },
+      },
+    })
+
+    const submitButton = wrapper.findAll('button').find((node) => node.text() === 'Create user')
+    await submitButton.trigger('click')
+    await flushPromises()
+
+    expect(validateMock).toHaveBeenCalledTimes(1)
+    expect(wrapper.emitted('submit')).toBeFalsy()
+  })
+
+  it('emits cancel when cancel button is clicked', async () => {
+    const wrapper = mount(AdminUserForm, {
+      props: {
+        submitLabel: 'Create user',
+      },
+      global: {
+        directives: {
+          maska: {
+            mounted(el, binding) {
+              el.__maskaOnMaska = binding.value?.onMaska
+            },
+            updated(el, binding) {
+              el.__maskaOnMaska = binding.value?.onMaska
+            },
+          },
+        },
+        stubs: {
+          ElForm: ElFormStub,
+          ElFormItem: ElFormItemStub,
+          ElInput: ElInputStub,
+          ElSelect: ElSelectStub,
+          ElOption: ElOptionStub,
+          ElButton: ElButtonStub,
+          CpfField: CpfFieldStub,
+        },
+      },
+    })
+
+    const cancelButton = wrapper.findAll('button').find((node) => node.text() === 'Cancel')
+    await cancelButton.trigger('click')
+
+    expect(wrapper.emitted('cancel')).toBeTruthy()
+    expect(wrapper.emitted('cancel')).toHaveLength(1)
+  })
 })
