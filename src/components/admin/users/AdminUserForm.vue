@@ -2,6 +2,8 @@
 import { computed, reactive, shallowRef, watch } from 'vue'
 import { vMaska } from 'maska/vue'
 
+import CpfField from '@/components/forms/CpfField.vue'
+
 const props = defineProps({
   initialValues: {
     type: Object,
@@ -50,20 +52,6 @@ const statusOptions = [
   { label: 'Inactive', value: 0 },
 ]
 
-const validateCpfFormat = (_, value, callback) => {
-  if (!value) {
-    callback(new Error('CPF is required.'))
-    return
-  }
-
-  if (cpfUnmasked.value.length !== 11) {
-    callback(new Error('CPF must have 11 digits.'))
-    return
-  }
-
-  callback()
-}
-
 const validatePhoneFormat = (_, value, callback) => {
   if (!value) {
     callback(new Error('Phone is required.'))
@@ -84,7 +72,6 @@ const rules = computed(() => ({
     { required: true, message: 'Email is required.', trigger: 'blur' },
     { type: 'email', message: 'Please enter a valid email address.', trigger: 'blur' },
   ],
-  cpf: [{ required: true, validator: validateCpfFormat, trigger: ['blur', 'change'] }],
   phone: [{ required: true, validator: validatePhoneFormat, trigger: ['blur', 'change'] }],
   role: [{ required: true, message: 'Role is required.', trigger: 'change' }],
   status: [{ required: true, message: 'Status is required.', trigger: 'change' }],
@@ -121,13 +108,6 @@ watch(
   { immediate: true }
 )
 
-const vMaskaCpfOptions = {
-  onMaska: (detail) => {
-    cpfUnmasked.value = detail?.unmasked || ''
-  },
-  mask: '###.###.###-##',
-}
-
 const vMaskaPhoneOptions = {
   onMaska: (detail) => {
     phoneUnmasked.value = detail?.unmasked || ''
@@ -149,13 +129,13 @@ const handleSubmit = async () => {
   const payload = {
     name: form.name.trim(),
     email: form.email.trim(),
-    cpf: cpfUnmasked.value || digitsOnly(form.cpf),
     phone: phoneUnmasked.value || digitsOnly(form.phone),
     role: form.role,
     status: Number(form.status),
   }
 
   if (!props.isEdit) {
+    payload.cpf = cpfUnmasked.value || digitsOnly(form.cpf)
     payload.password = form.password
   }
 
@@ -177,15 +157,13 @@ const handleCancel = () => {
       <ElInput v-model="form.email" placeholder="user@schoolmaster.test" size="large" />
     </ElFormItem>
 
-    <ElFormItem label="CPF" prop="cpf">
-      <ElInput
-        v-maska="vMaskaCpfOptions"
-        v-model="form.cpf"
-        placeholder="000.000.000-00"
-        size="large"
-        maxlength="14"
-      />
-    </ElFormItem>
+    <CpfField
+      v-model="form.cpf"
+      v-model:unmasked="cpfUnmasked"
+      prop="cpf"
+      :readonly="isEdit"
+      :validate="!isEdit"
+    />
 
     <ElFormItem label="Phone" prop="phone">
       <ElInput

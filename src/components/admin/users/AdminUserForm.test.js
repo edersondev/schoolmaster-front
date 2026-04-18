@@ -115,6 +115,52 @@ const ElButtonStub = defineComponent({
   },
 })
 
+const CpfFieldStub = defineComponent({
+  name: 'CpfField',
+  props: {
+    modelValue: {
+      type: String,
+      default: '',
+    },
+    unmasked: {
+      type: String,
+      default: '',
+    },
+    placeholder: {
+      type: String,
+      default: '000.000.000-00',
+    },
+    maxlength: {
+      type: [String, Number],
+      default: 14,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    validate: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  emits: ['update:modelValue', 'update:unmasked'],
+  setup(props, { emit }) {
+    return () =>
+      h('input', {
+        value: props.modelValue,
+        placeholder: props.placeholder,
+        maxlength: String(props.maxlength),
+        readonly: props.readonly,
+        'data-validate': String(props.validate),
+        onInput: (event) => {
+          const value = String(event.target.value || '')
+          emit('update:modelValue', value)
+          emit('update:unmasked', value.replace(/\D/g, ''))
+        },
+      })
+  },
+})
+
 describe('AdminUserForm', () => {
   beforeEach(() => {
     validateMock.mockReset()
@@ -144,6 +190,7 @@ describe('AdminUserForm', () => {
           ElSelect: ElSelectStub,
           ElOption: ElOptionStub,
           ElButton: ElButtonStub,
+          CpfField: CpfFieldStub,
         },
       },
     })
@@ -212,6 +259,7 @@ describe('AdminUserForm', () => {
           ElSelect: ElSelectStub,
           ElOption: ElOptionStub,
           ElButton: ElButtonStub,
+          CpfField: CpfFieldStub,
         },
       },
     })
@@ -219,9 +267,11 @@ describe('AdminUserForm', () => {
     expect(wrapper.text()).not.toContain('Password')
 
     const [nameInput, emailInput, cpfInput, phoneInput] = wrapper.findAll('input')
+    expect(cpfInput.attributes('readonly')).toBeDefined()
+    expect(cpfInput.attributes('data-validate')).toBe('false')
+
     await nameInput.setValue('Existing User Edited')
     await emailInput.setValue('existing-edited@schoolmaster.test')
-    await cpfInput.setValue('987.654.321-00')
     await phoneInput.setValue('(11) 97777-6666')
 
     const submitButton = wrapper.findAll('button').find((node) => node.text() === 'Save changes')
@@ -233,11 +283,11 @@ describe('AdminUserForm', () => {
     expect(submitEvents[0][0]).toEqual({
       name: 'Existing User Edited',
       email: 'existing-edited@schoolmaster.test',
-      cpf: '98765432100',
       phone: '11977776666',
       role: 'teacher',
       status: 1,
     })
+    expect(submitEvents[0][0].cpf).toBeUndefined()
     expect(submitEvents[0][0].password).toBeUndefined()
   })
 })

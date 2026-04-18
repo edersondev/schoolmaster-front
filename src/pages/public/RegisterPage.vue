@@ -3,6 +3,7 @@ import { reactive, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { vMaska } from "maska/vue"
 
+import CpfField from '@/components/forms/CpfField.vue'
 import PublicLayout from '@/components/layouts/PublicLayout.vue'
 import authService from '@/services/authService'
 
@@ -12,7 +13,6 @@ const submitError = shallowRef('')
 
 const phoneUnmasked = shallowRef('')
 const cpfUnmasked = shallowRef('')
-const isCpfInputDisabled = shallowRef(false)
 
 const router = useRouter()
 
@@ -26,21 +26,6 @@ const form = reactive({
 })
 
 const fieldErrors = reactive({})
-
-const validateCpf = async (_, value, callback) => {
-  if (!value) {
-    callback(new Error('CPF is required.'))
-    return
-  }
-
-  if (cpfUnmasked.value.length !== 11) {
-    callback(new Error('CPF must have 11 digits.'))
-    return
-  }
-
-  const response = await checkCpfAvailability()
-  callback(response instanceof Error ? response : undefined)
-}
 
 const validatePhoneFormat = (_, value, callback) => {
   if (!value) {
@@ -73,31 +58,12 @@ const rules = {
         }
       }, trigger: 'blur' },
   ],
-  cpf: [{ required: true, validator: validateCpf, trigger: ['blur', 'change'] }],
   phone: [{ required: true, validator: validatePhoneFormat, trigger: ['blur'] }],
-}
-
-const checkCpfAvailability = async () => {
-  try {
-    isCpfInputDisabled.value = true
-    await authService.checkCpfAvailability(cpfUnmasked.value)
-    return true
-  } catch (error) {
-    const errorMessage = error?.data?.errors?.cpf?.[0] || error?.message || 'Unable to validate CPF.'
-    return new Error(errorMessage)
-  } finally {
-    isCpfInputDisabled.value = false
-  }
 }
 
 const vMaskaPhoneOptions = {
   onMaska: (detail) => phoneUnmasked.value = detail?.unmasked,
   mask: '(##) #####-####',
-}
-
-const vMaskaCpfOptions = {
-  onMaska: (detail) => cpfUnmasked.value = detail?.unmasked,
-  mask: '###.###.###-##',
 }
 
 const handleSubmit = async () => {
@@ -161,16 +127,12 @@ const handleSubmit = async () => {
             <ElInput v-model="form.email" placeholder="you@example.com" size="large" />
           </ElFormItem>
 
-          <ElFormItem label="CPF" prop="cpf" :error="fieldErrors?.cpf">
-            <ElInput
-              v-maska="vMaskaCpfOptions"
-              v-model="form.cpf"
-              :disabled="isCpfInputDisabled"
-              placeholder="000.000.000-00"
-              size="large"
-              maxlength="14"
-            />
-          </ElFormItem>
+          <CpfField
+            v-model="form.cpf"
+            v-model:unmasked="cpfUnmasked"
+            prop="cpf"
+            :error="fieldErrors?.cpf"
+          />
 
           <ElFormItem label="Phone" prop="phone" :error="fieldErrors?.phone">
             <ElInput
