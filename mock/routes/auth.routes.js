@@ -80,6 +80,11 @@ export default function createAuthRoutes(dbRouter, pathPrefix = '') {
         }
       }
 
+      payload.status = 0; // pending approval
+      payload.role = 'school-admin'
+
+      usersCollection().insert({ ...payload }).write()
+
       return res.status(201).json({
         message: 'Account created successfully. Your registration will be active soon.',
       })
