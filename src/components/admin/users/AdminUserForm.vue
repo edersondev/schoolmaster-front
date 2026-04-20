@@ -1,8 +1,8 @@
 <script setup>
 import { computed, reactive, shallowRef, watch } from 'vue'
-import { vMaska } from 'maska/vue'
 
 import CpfField from '@/components/forms/CpfField.vue'
+import PhoneField from '@/components/forms/PhoneField.vue'
 
 const props = defineProps({
   initialValues: {
@@ -52,27 +52,12 @@ const statusOptions = [
   { label: 'Inactive', value: 0 },
 ]
 
-const validatePhoneFormat = (_, value, callback) => {
-  if (!value) {
-    callback(new Error('Phone is required.'))
-    return
-  }
-
-  if (phoneUnmasked.value.length !== 11) {
-    callback(new Error('Phone must have 11 digits.'))
-    return
-  }
-
-  callback()
-}
-
 const rules = computed(() => ({
   name: [{ required: true, message: 'Name is required.', trigger: 'blur' }],
   email: [
     { required: true, message: 'Email is required.', trigger: 'blur' },
     { type: 'email', message: 'Please enter a valid email address.', trigger: 'blur' },
   ],
-  phone: [{ required: true, validator: validatePhoneFormat, trigger: ['blur', 'change'] }],
   role: [{ required: true, message: 'Role is required.', trigger: 'change' }],
   status: [{ required: true, message: 'Status is required.', trigger: 'change' }],
   ...(props.isEdit
@@ -107,13 +92,6 @@ watch(
   },
   { immediate: true }
 )
-
-const vMaskaPhoneOptions = {
-  onMaska: (detail) => {
-    phoneUnmasked.value = detail?.unmasked || ''
-  },
-  mask: '(##) #####-####',
-}
 
 const handleSubmit = async () => {
   if (!formRef.value) {
@@ -165,15 +143,7 @@ const handleCancel = () => {
       :validate="!isEdit"
     />
 
-    <ElFormItem label="Phone" prop="phone">
-      <ElInput
-        v-maska="vMaskaPhoneOptions"
-        v-model="form.phone"
-        placeholder="(00) 00000-0000"
-        size="large"
-        maxlength="15"
-      />
-    </ElFormItem>
+    <PhoneField v-model="form.phone" v-model:unmasked="phoneUnmasked" prop="phone" :validate="true" />
 
     <ElFormItem label="Role" prop="role">
       <ElSelect v-model="form.role" placeholder="Select role" size="large">

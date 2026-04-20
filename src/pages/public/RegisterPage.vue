@@ -1,9 +1,9 @@
 <script setup>
 import { reactive, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
-import { vMaska } from "maska/vue"
 
 import CpfField from '@/components/forms/CpfField.vue'
+import PhoneField from '@/components/forms/PhoneField.vue'
 import PublicLayout from '@/components/layouts/PublicLayout.vue'
 import authService from '@/services/authService'
 
@@ -27,20 +27,6 @@ const form = reactive({
 
 const fieldErrors = reactive({})
 
-const validatePhoneFormat = (_, value, callback) => {
-  if (!value) {
-    callback(new Error('Phone is required.'))
-    return
-  }
-
-  if (phoneUnmasked.value.length !== 11) {
-    callback(new Error('Phone must have 11 digits.'))
-    return
-  }
-
-  callback()
-}
-
 const rules = {
   name: [{ required: true, message: 'Name is required.', trigger: 'blur' }],
   email: [
@@ -58,12 +44,6 @@ const rules = {
         }
       }, trigger: 'blur' },
   ],
-  phone: [{ required: true, validator: validatePhoneFormat, trigger: ['blur'] }],
-}
-
-const vMaskaPhoneOptions = {
-  onMaska: (detail) => phoneUnmasked.value = detail?.unmasked,
-  mask: '(##) #####-####',
 }
 
 const handleSubmit = async () => {
@@ -134,15 +114,13 @@ const handleSubmit = async () => {
             :error="fieldErrors?.cpf"
           />
 
-          <ElFormItem label="Phone" prop="phone" :error="fieldErrors?.phone">
-            <ElInput
-              v-maska="vMaskaPhoneOptions"
-              v-model="form.phone"
-              placeholder="(00) 00000-0000"
-              size="large"
-              maxlength="15"
-            />
-          </ElFormItem>
+          <PhoneField
+            v-model="form.phone"
+            v-model:unmasked="phoneUnmasked"
+            prop="phone"
+            :error="fieldErrors?.phone"
+            :validate="true"
+          />
 
           <ElFormItem label="Password" prop="password" :error="fieldErrors?.password">
             <ElInput v-model="form.password" type="password" placeholder="Create a password" size="large" show-password />
