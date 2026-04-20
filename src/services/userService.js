@@ -41,7 +41,7 @@ const createUser = async (payload) => {
 }
 
 const updateUser = async (id, payload) => {
-  const { data } = await api.put(`/users/${id}`, payload)
+  const { data } = await api.patch(`/users/${id}`, payload)
   return normalizeWriteResponse(data)
 }
 
