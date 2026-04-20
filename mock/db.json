@@ -65,5 +65,67 @@
       "created_at": "2026-03-05T09:00:00.000Z",
       "updated_at": "2026-03-05T09:00:00.000Z"
     }
+  ],
+  "schools": [
+    {
+      "id": 1,
+      "name": "Escola Primária Central",
+      "cnpj": "12345678000123",
+      "email": "contato@escolacentral.edu.br",
+      "phone": "1134567890",
+      "website": "https://escolacentral.edu.br",
+      "active": true,
+      "type": "public",
+      "education_levels": "elementary",
+      "inep_code": "12345678",
+      "foundation_date": "2000-01-01",
+      "description": "Escola pública de ensino fundamental com foco em educação de qualidade.",
+      "owner_id": 5,
+      "logo_path": "/logos/escola-central.png",
+      "primary_color": "#1f2937",
+      "secondary_color": "#3b82f6",
+      "created_at": "2026-03-01T09:00:00.000Z",
+      "updated_at": "2026-03-01T09:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Colégio Privado Excelência",
+      "cnpj": "98765432000198",
+      "email": "info@colegioexcelencia.com.br",
+      "phone": "1198765432",
+      "website": "https://colegioexcelencia.com.br",
+      "active": true,
+      "type": "private",
+      "education_levels": "elementary,high school",
+      "inep_code": "87654321",
+      "foundation_date": "1995-05-15",
+      "description": "Instituição privada de ensino com excelência acadêmica e infraestrutura moderna.",
+      "owner_id": 1,
+      "logo_path": "/logos/colegio-excelencia.png",
+      "primary_color": "#059669",
+      "secondary_color": "#10b981",
+      "created_at": "2026-03-02T09:00:00.000Z",
+      "updated_at": "2026-03-02T09:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "name": "Universidade Federal do Estado",
+      "cnpj": "45678912000145",
+      "email": "secretaria@ufestado.edu.br",
+      "phone": "1123456789",
+      "website": "https://ufestado.edu.br",
+      "active": true,
+      "type": "university",
+      "education_levels": "high school,college",
+      "inep_code": "11223344",
+      "foundation_date": "1960-03-10",
+      "description": "Universidade federal com diversos cursos de graduação e pós-graduação.",
+      "owner_id": 5,
+      "logo_path": "/logos/ufestado.png",
+      "primary_color": "#dc2626",
+      "secondary_color": "#ef4444",
+      "created_at": "2026-03-03T09:00:00.000Z",
+      "updated_at": "2026-03-03T09:00:00.000Z"
+    }
   ]
 }
