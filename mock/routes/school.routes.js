@@ -12,7 +12,7 @@ export default function createSchoolRoutes(dbRouter, pathPrefix = '') {
     try {
       const cnpj = onlyDigits(req.query?.cnpj)
 
-      const existingSchool = getSchools().find((item) => onlyDigits(item.cnpj) === cnpj)
+      const existingSchool = getSchools().find((item) => onlyDigits(item.document) === cnpj)
       if (existingSchool) {
         throw {
           code: 422,

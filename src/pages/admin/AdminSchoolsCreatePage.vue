@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 
@@ -10,6 +10,22 @@ const router = useRouter()
 const schoolStore = useSchoolStore()
 
 const loading = computed(() => schoolStore.loading)
+const referenceData = computed(() => schoolStore.referenceData)
+
+const loadReferenceData = async () => {
+  try {
+    await Promise.all([
+      schoolStore.fetchReferenceData(),
+      schoolStore.fetchSchoolAddresses(),
+    ])
+  } catch (error) {
+    ElMessage.error(error?.message || schoolStore.error || 'Unable to load school form data.')
+  }
+}
+
+onMounted(async () => {
+  await loadReferenceData()
+})
 
 const handleSubmit = async (payload) => {
   try {
@@ -37,6 +53,7 @@ const handleCancel = () => {
     <div class="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 shadow-sm">
       <AdminSchoolForm
         :loading="loading"
+        :reference-data="referenceData"
         submit-label="Create school"
         @submit="handleSubmit"
         @cancel="handleCancel"

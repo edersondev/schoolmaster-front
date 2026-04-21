@@ -12,11 +12,27 @@ const schoolStore = useSchoolStore()
 
 const schoolId = computed(() => route.params.id)
 const loading = computed(() => schoolStore.loading)
-const school = computed(() => schoolStore.selectedSchool)
+const referenceData = computed(() => schoolStore.referenceData)
+
+const schoolWithAddress = computed(() => {
+  const school = schoolStore.selectedSchool
+  if (!school) {
+    return null
+  }
+
+  return {
+    ...school,
+    address: schoolStore.getAddressBySchoolId(school.id),
+  }
+})
 
 const fetchSchool = async () => {
   try {
-    await schoolStore.fetchSchoolById(schoolId.value)
+    await Promise.all([
+      schoolStore.fetchReferenceData(),
+      schoolStore.fetchSchoolAddresses(),
+      schoolStore.fetchSchoolById(schoolId.value),
+    ])
   } catch (error) {
     ElMessage.error(error?.message || schoolStore.error || 'Unable to load school.')
     router.push('/admin/schools')
@@ -52,7 +68,8 @@ const handleCancel = () => {
 
     <div class="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 shadow-sm">
       <AdminSchoolForm
-        :initial-values="school"
+        :initial-values="schoolWithAddress"
+        :reference-data="referenceData"
         :is-edit="true"
         :loading="loading"
         submit-label="Update school"

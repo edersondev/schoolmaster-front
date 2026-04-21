@@ -1,7 +1,7 @@
 <script setup>
 import { Mask } from 'maska'
 
-defineProps({
+const props = defineProps({
   schools: {
     type: Array,
     default: () => [],
@@ -10,22 +10,34 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  administrativeTypeLabelMap: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
 const emit = defineEmits(['edit', 'delete'])
 const cnpjMask = new Mask({ mask: '##.###.###/####-##' })
 
-const formatActiveLabel = (active) => {
-  return active ? 'Active' : 'Inactive'
+const formatStatusLabel = (status) => {
+  return Number(status) === 1 ? 'Active' : 'Inactive'
 }
 
-const formatCnpj = (cnpj) => {
-  const value = String(cnpj || '').trim()
+const formatCnpj = (document) => {
+  const value = String(document || '').trim()
   if (!value) {
     return '-'
   }
 
   return cnpjMask.masked(value)
+}
+
+const formatAdministrativeType = (administrativeTypeId) => {
+  if (!administrativeTypeId) {
+    return '-'
+  }
+
+  return props.administrativeTypeLabelMap[String(administrativeTypeId)] || '-'
 }
 
 const handleEdit = (school) => {
@@ -40,16 +52,19 @@ const handleDelete = (school) => {
 <template>
   <ElTable :data="schools" :loading="loading" class="w-full" empty-text="No schools found.">
     <ElTableColumn prop="name" label="Name" min-width="220" />
-    <ElTableColumn prop="email" label="Email" min-width="240" />
-    <ElTableColumn label="CNPJ" min-width="160">
+    <ElTableColumn label="CNPJ" min-width="170">
       <template #default="{ row }">
-        {{ formatCnpj(row.cnpj) }}
+        {{ formatCnpj(row.document) }}
       </template>
     </ElTableColumn>
-    <ElTableColumn prop="type" label="Type" min-width="120" />
-    <ElTableColumn label="Active" min-width="100">
+    <ElTableColumn label="Administrative Type" min-width="170">
       <template #default="{ row }">
-        {{ formatActiveLabel(row.active) }}
+        {{ formatAdministrativeType(row.administrative_type_id) }}
+      </template>
+    </ElTableColumn>
+    <ElTableColumn label="Status" min-width="100">
+      <template #default="{ row }">
+        {{ formatStatusLabel(row.status) }}
       </template>
     </ElTableColumn>
     <ElTableColumn label="Actions" min-width="180" fixed="right">
