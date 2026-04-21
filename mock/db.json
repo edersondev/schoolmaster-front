@@ -1,4 +1,41 @@
 {
+  "roles": [
+    {
+      "id": 1,
+      "name": "admin",
+      "description": "Administrador do sistema com acesso total a todas as funcionalidades.",
+      "created_at": "2026-03-01T09:00:00.000Z",
+      "updated_at": "2026-03-01T09:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "teacher",
+      "description": "Professor responsável por ministrar aulas e gerenciar turmas.",
+      "created_at": "2026-03-02T09:00:00.000Z",
+      "updated_at": "2026-03-02T09:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "name": "student",
+      "description": "Aluno matriculado em uma ou mais turmas, com acesso a materiais e avaliações.",
+      "created_at": "2026-03-03T09:00:00.000Z",
+      "updated_at": "2026-03-03T09:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "name": "guardian",
+      "description": "Responsável legal por um ou mais alunos, com acesso a informações acadêmicas e financeiras.",
+      "created_at": "2026-03-04T09:00:00.000Z",
+      "updated_at": "2026-03-04T09:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "name": "school-admin",
+      "description": "Administrador da escola, responsável por gerenciar usuários, turmas e recursos da instituição.",
+      "created_at": "2026-03-05T09:00:00.000Z",
+      "updated_at": "2026-03-05T09:00:00.000Z"
+    }
+  ],
   "users": [
     {
       "id": 1,
@@ -7,7 +44,7 @@
       "cpf": "11111111111",
       "phone": "11911111111",
       "status": 1,
-      "role": "admin",
+      "role_id": 1,
       "password": "password123",
       "email_verified_at": "2026-03-01T09:00:00.000Z",
       "created_at": "2026-03-01T09:00:00.000Z",
@@ -20,7 +57,7 @@
       "cpf": "22222222222",
       "phone": "11922222222",
       "status": 1,
-      "role": "teacher",
+      "role_id": 2,
       "password": "password123",
       "email_verified_at": "2026-03-02T09:00:00.000Z",
       "created_at": "2026-03-02T09:00:00.000Z",
@@ -33,7 +70,7 @@
       "cpf": "33333333333",
       "phone": "11933333333",
       "status": 1,
-      "role": "student",
+      "role_id": 3,
       "password": "password123",
       "email_verified_at": "2026-03-03T09:00:00.000Z",
       "created_at": "2026-03-03T09:00:00.000Z",
@@ -46,7 +83,7 @@
       "cpf": "44444444444",
       "phone": "11944444444",
       "status": 1,
-      "role": "guardian",
+      "role_id": 4,
       "password": "password123",
       "email_verified_at": "2026-03-04T09:00:00.000Z",
       "created_at": "2026-03-04T09:00:00.000Z",
@@ -59,7 +96,7 @@
       "cpf": "55555555555",
       "phone": "11955555555",
       "status": 1,
-      "role": "school-admin",
+      "role_id": 5,
       "password": "password123",
       "email_verified_at": "2026-03-05T09:00:00.000Z",
       "created_at": "2026-03-05T09:00:00.000Z",
