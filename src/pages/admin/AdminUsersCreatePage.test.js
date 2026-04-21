@@ -46,7 +46,7 @@ vi.mock('@/components/admin/users/AdminUserForm.vue', () => ({
                 email: 'new@x.com',
                 cpf: '12345678901',
                 phone: '11999990000',
-                role: 'admin',
+                role_id: 1,
                 status: 1,
                 password: 'password123',
               }),
@@ -81,7 +81,7 @@ describe('AdminUsersCreatePage', () => {
       email: 'new@x.com',
       cpf: '12345678901',
       phone: '11999990000',
-      role: 'admin',
+      role_id: 1,
       status: 1,
       password: 'password123',
     })

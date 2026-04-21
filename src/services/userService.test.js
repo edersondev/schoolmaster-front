@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const apiGet = vi.hoisted(() => vi.fn())
 const apiPut = vi.hoisted(() => vi.fn())
+const apiPatch = vi.hoisted(() => vi.fn())
 const apiPost = vi.hoisted(() => vi.fn())
 const apiDelete = vi.hoisted(() => vi.fn())
 
@@ -9,6 +10,7 @@ vi.mock('@/services/api', () => ({
   default: {
     get: apiGet,
     put: apiPut,
+    patch: apiPatch,
     post: apiPost,
     delete: apiDelete,
   },
@@ -18,6 +20,7 @@ describe('userService', () => {
   beforeEach(() => {
     apiGet.mockReset()
     apiPut.mockReset()
+    apiPatch.mockReset()
     apiPost.mockReset()
     apiDelete.mockReset()
   })
@@ -83,11 +86,11 @@ describe('userService', () => {
 
   it('updates a user and normalizes empty 204 response', async () => {
     const userService = (await import('@/services/userService')).default
-    apiPut.mockResolvedValue({ data: '' })
+    apiPatch.mockResolvedValue({ data: '' })
 
     const result = await userService.updateUser(11, { name: 'Edited' })
 
-    expect(apiPut).toHaveBeenCalledWith('/users/11', { name: 'Edited' })
+    expect(apiPatch).toHaveBeenCalledWith('/users/11', { name: 'Edited' })
     expect(result).toBeNull()
   })
 

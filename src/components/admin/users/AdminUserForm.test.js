@@ -4,7 +4,20 @@ import { mount, flushPromises } from '@vue/test-utils'
 
 import AdminUserForm from './AdminUserForm.vue'
 
+const fetchRolesMock = vi.hoisted(() => vi.fn())
+const roleStoreState = vi.hoisted(() => ({
+  roles: [],
+  loading: false,
+  error: null,
+}))
 const validateMock = vi.hoisted(() => vi.fn())
+
+vi.mock('@/stores/roleStore', () => ({
+  useRoleStore: () => ({
+    ...roleStoreState,
+    fetchRoles: fetchRolesMock,
+  }),
+}))
 
 const ElFormStub = defineComponent({
   name: 'ElForm',
@@ -69,7 +82,7 @@ const ElSelectStub = defineComponent({
     },
   },
   emits: ['update:modelValue'],
-  setup(props, { emit }) {
+  setup(props, { slots, emit }) {
     return () =>
       h(
         'select',
@@ -77,7 +90,7 @@ const ElSelectStub = defineComponent({
           value: String(props.modelValue),
           onChange: (event) => emit('update:modelValue', event.target.value),
         },
-        []
+        slots.default?.()
       )
   },
 })
@@ -94,8 +107,8 @@ const ElOptionStub = defineComponent({
       default: '',
     },
   },
-  setup() {
-    return () => null
+  setup(props) {
+    return () => h('option', { value: String(props.value) }, props.label)
   },
 })
 
@@ -165,6 +178,14 @@ describe('AdminUserForm', () => {
   beforeEach(() => {
     validateMock.mockReset()
     validateMock.mockResolvedValue(undefined)
+    fetchRolesMock.mockReset()
+    fetchRolesMock.mockResolvedValue([])
+    roleStoreState.roles = [
+      { id: 1, name: 'admin' },
+      { id: 2, name: 'teacher' },
+    ]
+    roleStoreState.loading = false
+    roleStoreState.error = null
   })
 
   it('applies cpf/phone mask UX settings and submits unmasked values in create mode', async () => {
@@ -212,6 +233,7 @@ describe('AdminUserForm', () => {
     await submitButton.trigger('click')
     await flushPromises()
 
+    expect(fetchRolesMock).toHaveBeenCalledTimes(1)
     expect(validateMock).toHaveBeenCalledTimes(1)
 
     const submitEvents = wrapper.emitted('submit')
@@ -221,10 +243,43 @@ describe('AdminUserForm', () => {
       email: 'new@schoolmaster.test',
       cpf: '12345678901',
       phone: '11999990000',
-      role: 'admin',
+      role_id: 1,
       status: 1,
       password: 'password123',
     })
+  })
+
+  it('renders role options from API data', () => {
+    const wrapper = mount(AdminUserForm, {
+      props: {
+        submitLabel: 'Create user',
+      },
+      global: {
+        directives: {
+          maska: {
+            mounted(el, binding) {
+              el.__maskaOnMaska = binding.value?.onMaska
+            },
+            updated(el, binding) {
+              el.__maskaOnMaska = binding.value?.onMaska
+            },
+          },
+        },
+        stubs: {
+          ElForm: ElFormStub,
+          ElFormItem: ElFormItemStub,
+          ElInput: ElInputStub,
+          ElSelect: ElSelectStub,
+          ElOption: ElOptionStub,
+          ElButton: ElButtonStub,
+          CpfField: CpfFieldStub,
+        },
+      },
+    })
+
+    const options = wrapper.findAll('option').map((option) => option.text())
+    expect(options).toContain('Admin')
+    expect(options).toContain('Teacher')
   })
 
   it('does not include password in edit mode payload', async () => {
@@ -237,7 +292,7 @@ describe('AdminUserForm', () => {
           email: 'existing@schoolmaster.test',
           cpf: '12345678901',
           phone: '11988887777',
-          role: 'teacher',
+          role_id: 2,
           status: 1,
         },
       },
@@ -284,7 +339,7 @@ describe('AdminUserForm', () => {
       name: 'Existing User Edited',
       email: 'existing-edited@schoolmaster.test',
       phone: '11977776666',
-      role: 'teacher',
+      role_id: 2,
       status: 1,
     })
     expect(submitEvents[0][0].cpf).toBeUndefined()

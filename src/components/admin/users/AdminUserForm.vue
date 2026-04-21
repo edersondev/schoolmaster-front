@@ -1,8 +1,9 @@
 <script setup>
-import { computed, reactive, shallowRef, watch } from 'vue'
+import { computed, onMounted, reactive, shallowRef, watch } from 'vue'
 
 import CpfField from '@/components/forms/CpfField.vue'
 import PhoneField from '@/components/forms/PhoneField.vue'
+import { useRoleStore } from '@/stores/roleStore'
 
 const props = defineProps({
   initialValues: {
@@ -25,6 +26,7 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 
+const roleStore = useRoleStore()
 const formRef = shallowRef(null)
 const cpfUnmasked = shallowRef('')
 const phoneUnmasked = shallowRef('')
@@ -34,18 +36,23 @@ const form = reactive({
   email: '',
   cpf: '',
   phone: '',
-  role: 'admin',
+  role_id: '',
   status: 1,
   password: '',
 })
 
-const roleOptions = [
-  { label: 'Admin', value: 'admin' },
-  { label: 'School Admin', value: 'school-admin' },
-  { label: 'Teacher', value: 'teacher' },
-  { label: 'Student', value: 'student' },
-  { label: 'Guardian', value: 'guardian' },
-]
+const formatRoleLabel = (roleName) =>
+  String(roleName || '')
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+
+const roleOptions = computed(() =>
+  roleStore.roles.map((role) => ({
+    label: formatRoleLabel(role.name),
+    value: Number(role.id),
+  }))
+)
 
 const statusOptions = [
   { label: 'Active', value: 1 },
@@ -58,7 +65,7 @@ const rules = computed(() => ({
     { required: true, message: 'Email is required.', trigger: 'blur' },
     { type: 'email', message: 'Please enter a valid email address.', trigger: 'blur' },
   ],
-  role: [{ required: true, message: 'Role is required.', trigger: 'change' }],
+  role_id: [{ required: true, message: 'Role is required.', trigger: 'change' }],
   status: [{ required: true, message: 'Status is required.', trigger: 'change' }],
   ...(props.isEdit
     ? {}
@@ -72,17 +79,30 @@ const rules = computed(() => ({
 
 const digitsOnly = (value) => String(value || '').replace(/\D/g, '')
 
+const ensureDefaultRole = () => {
+  const hasRole = form.role_id !== '' && form.role_id != null
+  if (hasRole) {
+    return
+  }
+
+  const firstRoleOption = roleOptions.value[0]
+  if (firstRoleOption) {
+    form.role_id = firstRoleOption.value
+  }
+}
+
 const hydrateForm = (values) => {
   form.name = values?.name || ''
   form.email = values?.email || ''
   form.cpf = values?.cpf || ''
   form.phone = values?.phone || ''
-  form.role = values?.role || 'admin'
+  form.role_id = values?.role_id ?? ''
   form.status = Number(values?.status ?? 1)
   form.password = ''
 
   cpfUnmasked.value = digitsOnly(values?.cpf)
   phoneUnmasked.value = digitsOnly(values?.phone)
+  ensureDefaultRole()
 }
 
 watch(
@@ -92,6 +112,18 @@ watch(
   },
   { immediate: true }
 )
+
+watch(roleOptions, () => {
+  ensureDefaultRole()
+})
+
+onMounted(async () => {
+  try {
+    await roleStore.fetchRoles()
+  } catch {
+    ensureDefaultRole()
+  }
+})
 
 const handleSubmit = async () => {
   if (!formRef.value) {
@@ -108,7 +140,7 @@ const handleSubmit = async () => {
     name: form.name.trim(),
     email: form.email.trim(),
     phone: phoneUnmasked.value || digitsOnly(form.phone),
-    role: form.role,
+    role_id: Number(form.role_id),
     status: Number(form.status),
   }
 
@@ -145,8 +177,13 @@ const handleCancel = () => {
 
     <PhoneField v-model="form.phone" v-model:unmasked="phoneUnmasked" prop="phone" :validate="true" />
 
-    <ElFormItem label="Role" prop="role">
-      <ElSelect v-model="form.role" placeholder="Select role" size="large">
+    <ElFormItem label="Role" prop="role_id">
+      <ElSelect
+        v-model="form.role_id"
+        placeholder="Select role"
+        size="large"
+        :loading="roleStore.loading"
+      >
         <ElOption
           v-for="option in roleOptions"
           :key="option.value"

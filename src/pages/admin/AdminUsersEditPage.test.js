@@ -61,7 +61,7 @@ vi.mock('@/components/admin/users/AdminUserForm.vue', () => ({
                 email: 'updated@x.com',
                 cpf: '98765432100',
                 phone: '11988887777',
-                role: 'teacher',
+                role_id: 2,
                 status: 1,
               }),
           }, 'Submit'),
@@ -104,7 +104,7 @@ describe('AdminUsersEditPage', () => {
       email: 'updated@x.com',
       cpf: '98765432100',
       phone: '11988887777',
-      role: 'teacher',
+      role_id: 2,
       status: 1,
     })
     expect(messageSuccess).toHaveBeenCalledWith('User updated successfully!')

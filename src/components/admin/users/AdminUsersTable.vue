@@ -46,7 +46,11 @@ const handleDelete = (user) => {
         {{ formatCpf(row.cpf) }}
       </template>
     </ElTableColumn>
-    <ElTableColumn prop="role" label="Role" min-width="140" />
+    <ElTableColumn label="Role" min-width="140">
+      <template #default="{ row }">
+        {{ row.role_label || '-' }}
+      </template>
+    </ElTableColumn>
     <ElTableColumn label="Status" min-width="120">
       <template #default="{ row }">
         {{ formatStatusLabel(row.status) }}

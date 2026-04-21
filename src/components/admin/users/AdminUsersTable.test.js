@@ -49,7 +49,7 @@ describe('AdminUsersTable', () => {
     const wrapper = mount(AdminUsersTable, {
       props: {
         users: [
-          { id: 7, name: 'Jane', email: 'jane@x.com', cpf: '12345678901', role: 'admin', status: 1 },
+          { id: 7, name: 'Jane', email: 'jane@x.com', cpf: '12345678901', role_label: 'Admin', status: 1 },
         ],
       },
       global: {
@@ -65,13 +65,14 @@ describe('AdminUsersTable', () => {
     expect(wrapper.text()).not.toContain('Phone')
     expect(wrapper.text()).toContain('123.456.789-01')
     expect(wrapper.text()).toContain('Active')
+    expect(wrapper.text()).toContain('Admin')
   })
 
   it('emits edit and delete actions', async () => {
     const wrapper = mount(AdminUsersTable, {
       props: {
         users: [
-          { id: 7, name: 'Jane', email: 'jane@x.com', cpf: '12345678901', role: 'admin', status: 1 },
+          { id: 7, name: 'Jane', email: 'jane@x.com', cpf: '12345678901', role_label: 'Admin', status: 1 },
         ],
       },
       global: {
@@ -93,7 +94,7 @@ describe('AdminUsersTable', () => {
       name: 'Jane',
       email: 'jane@x.com',
       cpf: '12345678901',
-      role: 'admin',
+      role_label: 'Admin',
       status: 1,
     })
 
@@ -102,7 +103,7 @@ describe('AdminUsersTable', () => {
       name: 'Jane',
       email: 'jane@x.com',
       cpf: '12345678901',
-      role: 'admin',
+      role_label: 'Admin',
       status: 1,
     })
   })
