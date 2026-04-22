@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { vMaska } from 'maska/vue'
 
 const props = defineProps({
@@ -38,6 +38,8 @@ const emit = defineEmits(['update:modelValue'])
 
 const model = computed(() => props.modelValue || {})
 
+const zipCodeMasked = shallowRef(model.value.zip_code || '')
+
 const digitsOnly = (value) => String(value || '').replace(/\D/g, '')
 
 const formProp = (field) => `${props.propPrefix}${field}`
@@ -53,8 +55,9 @@ const updateAddressNumber = (value) => {
   updateModel('number', digitsOnly(value))
 }
 
-const updateAddressZipCode = (value) => {
-  updateModel('zip_code', digitsOnly(value))
+const vMaskaZipCodeOptions = {
+  onMaska: (detail) => updateModel('zip_code', detail?.unmasked),
+  mask: '#####-###',
 }
 </script>
 
@@ -127,14 +130,13 @@ const updateAddressZipCode = (value) => {
 
     <ElFormItem label="Zip Code" :prop="formProp('zip_code')">
       <ElInput
-        v-maska="'#####-###'"
-        :model-value="model.zip_code"
+        v-maska="vMaskaZipCodeOptions"
+        v-model="zipCodeMasked"
         placeholder="00000-000"
         inputmode="numeric"
         :maxlength="9"
         :disabled="disabled"
         :readonly="readonly"
-        @update:model-value="updateAddressZipCode"
       />
     </ElFormItem>
 
