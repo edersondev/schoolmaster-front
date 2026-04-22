@@ -1,15 +1,31 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 
 import AdminUserForm from '@/components/admin/users/AdminUserForm.vue'
+import { useRoleStore } from '@/stores/roleStore'
 import { useUserStore } from '@/stores/userStore'
 
 const router = useRouter()
+const roleStore = useRoleStore()
 const userStore = useUserStore()
 
 const loading = computed(() => userStore.loading)
+const roles = computed(() => roleStore.roles)
+const rolesLoading = computed(() => roleStore.loading)
+
+const fetchRoles = async () => {
+  try {
+    await roleStore.fetchRoles()
+  } catch (error) {
+    ElMessage.error(error?.message || roleStore.error || 'Unable to load roles.')
+  }
+}
+
+onMounted(async () => {
+  await fetchRoles()
+})
 
 const handleSubmit = async (payload) => {
   try {
@@ -37,6 +53,8 @@ const handleCancel = () => {
     <div class="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 shadow-sm">
       <AdminUserForm
         :loading="loading"
+        :roles="roles"
+        :roles-loading="rolesLoading"
         submit-label="Create user"
         @submit="handleSubmit"
         @cancel="handleCancel"

@@ -4,6 +4,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 
 const pushMock = vi.hoisted(() => vi.fn())
 const fetchUserByIdMock = vi.hoisted(() => vi.fn())
+const fetchRolesMock = vi.hoisted(() => vi.fn())
 const updateUserMock = vi.hoisted(() => vi.fn())
 const messageSuccess = vi.hoisted(() => vi.fn())
 const messageError = vi.hoisted(() => vi.fn())
@@ -14,6 +15,11 @@ const routeState = vi.hoisted(() => ({
 
 const storeState = vi.hoisted(() => ({
   selectedUser: null,
+  loading: false,
+  error: null,
+}))
+const roleStoreState = vi.hoisted(() => ({
+  roles: [],
   loading: false,
   error: null,
 }))
@@ -30,6 +36,13 @@ vi.mock('@/stores/userStore', () => ({
     ...storeState,
     fetchUserById: fetchUserByIdMock,
     updateUser: updateUserMock,
+  }),
+}))
+
+vi.mock('@/stores/roleStore', () => ({
+  useRoleStore: () => ({
+    ...roleStoreState,
+    fetchRoles: fetchRolesMock,
   }),
 }))
 
@@ -77,13 +90,18 @@ describe('AdminUsersEditPage', () => {
   beforeEach(() => {
     pushMock.mockReset()
     fetchUserByIdMock.mockReset()
+    fetchRolesMock.mockReset()
     updateUserMock.mockReset()
     messageSuccess.mockClear()
     messageError.mockClear()
     storeState.selectedUser = { id: 7, name: 'Loaded User' }
     storeState.loading = false
     storeState.error = null
+    roleStoreState.roles = [{ id: 1, name: 'admin' }, { id: 2, name: 'teacher' }]
+    roleStoreState.loading = false
+    roleStoreState.error = null
     fetchUserByIdMock.mockResolvedValue(storeState.selectedUser)
+    fetchRolesMock.mockResolvedValue(roleStoreState.roles)
     updateUserMock.mockResolvedValue({ id: 7, name: 'Updated User' })
     routeState.params = { id: '7' }
   })
@@ -94,6 +112,7 @@ describe('AdminUsersEditPage', () => {
     await flushPromises()
 
     expect(fetchUserByIdMock).toHaveBeenCalledWith('7')
+    expect(fetchRolesMock).toHaveBeenCalledTimes(1)
     expect(wrapper.text()).toContain('Loaded: Loaded User')
 
     await wrapper.find('button').trigger('click')
@@ -118,5 +137,15 @@ describe('AdminUsersEditPage', () => {
     await wrapper.findAll('button')[1].trigger('click')
 
     expect(pushMock).toHaveBeenCalledWith('/admin/users')
+  })
+
+  it('shows role fetch error and keeps page flow', async () => {
+    fetchRolesMock.mockRejectedValueOnce(new Error('roles down'))
+
+    mount(AdminUsersEditPage)
+    await flushPromises()
+
+    expect(messageError).toHaveBeenCalledWith('roles down')
+    expect(fetchUserByIdMock).toHaveBeenCalledWith('7')
   })
 })

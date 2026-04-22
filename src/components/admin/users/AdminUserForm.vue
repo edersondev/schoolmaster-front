@@ -1,9 +1,8 @@
 <script setup>
-import { computed, onMounted, reactive, shallowRef, watch } from 'vue'
+import { computed, reactive, shallowRef, watch } from 'vue'
 
 import CpfField from '@/components/forms/CpfField.vue'
 import PhoneField from '@/components/forms/PhoneField.vue'
-import { useRoleStore } from '@/stores/roleStore'
 
 const props = defineProps({
   initialValues: {
@@ -18,6 +17,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  roles: {
+    type: Array,
+    default: () => [],
+  },
+  rolesLoading: {
+    type: Boolean,
+    default: false,
+  },
   submitLabel: {
     type: String,
     default: 'Save',
@@ -26,7 +33,6 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 
-const roleStore = useRoleStore()
 const formRef = shallowRef(null)
 const cpfUnmasked = shallowRef('')
 const phoneUnmasked = shallowRef('')
@@ -48,7 +54,7 @@ const formatRoleLabel = (roleName) =>
     .join(' ')
 
 const roleOptions = computed(() =>
-  roleStore.roles.map((role) => ({
+  props.roles.map((role) => ({
     label: formatRoleLabel(role.name),
     value: Number(role.id),
   }))
@@ -96,7 +102,7 @@ const hydrateForm = (values) => {
   form.email = values?.email || ''
   form.cpf = values?.cpf || ''
   form.phone = values?.phone || ''
-  form.role_id = values?.role_id ?? ''
+  form.role_id = values?.role_id ?? values?.role?.id ?? ''
   form.status = Number(values?.status ?? 1)
   form.password = ''
 
@@ -115,14 +121,6 @@ watch(
 
 watch(roleOptions, () => {
   ensureDefaultRole()
-})
-
-onMounted(async () => {
-  try {
-    await roleStore.fetchRoles()
-  } catch {
-    ensureDefaultRole()
-  }
 })
 
 const handleSubmit = async () => {
@@ -182,7 +180,7 @@ const handleCancel = () => {
         v-model="form.role_id"
         placeholder="Select role"
         size="large"
-        :loading="roleStore.loading"
+        :loading="rolesLoading"
       >
         <ElOption
           v-for="option in roleOptions"

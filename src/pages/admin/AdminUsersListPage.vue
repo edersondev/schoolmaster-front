@@ -4,31 +4,24 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 
 import AdminUsersTable from '@/components/admin/users/AdminUsersTable.vue'
-import { useRoleStore } from '@/stores/roleStore'
 import { useUserStore } from '@/stores/userStore'
 
 const router = useRouter()
-const roleStore = useRoleStore()
 const userStore = useUserStore()
 const searchQuery = shallowRef('')
 
 const loading = computed(() => userStore.loading)
-const roleLabelById = computed(() =>
-  new Map(
-    roleStore.roles.map((role) => [
-      String(role.id),
-      String(role.name || '')
-        .split('-')
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' '),
-    ])
-  )
-)
+
+const formatRoleLabel = (roleName) =>
+  String(roleName || '')
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
 
 const usersWithRoleLabel = computed(() =>
   userStore.users.map((user) => ({
     ...user,
-    role_label: roleLabelById.value.get(String(user.role_id)) || '-',
+    role_label: user.role?.name ? formatRoleLabel(user.role.name) : '-',
   }))
 )
 
@@ -59,16 +52,8 @@ const fetchUsers = async () => {
   }
 }
 
-const fetchRoles = async () => {
-  try {
-    await roleStore.fetchRoles()
-  } catch (error) {
-    ElMessage.error(error?.message || roleStore.error || 'Unable to load roles.')
-  }
-}
-
 onMounted(async () => {
-  await Promise.all([fetchUsers(), fetchRoles()])
+  await fetchUsers()
 })
 
 const goToCreate = () => {

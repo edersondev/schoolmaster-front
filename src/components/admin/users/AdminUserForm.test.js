@@ -4,20 +4,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 
 import AdminUserForm from './AdminUserForm.vue'
 
-const fetchRolesMock = vi.hoisted(() => vi.fn())
-const roleStoreState = vi.hoisted(() => ({
-  roles: [],
-  loading: false,
-  error: null,
-}))
 const validateMock = vi.hoisted(() => vi.fn())
-
-vi.mock('@/stores/roleStore', () => ({
-  useRoleStore: () => ({
-    ...roleStoreState,
-    fetchRoles: fetchRolesMock,
-  }),
-}))
 
 const ElFormStub = defineComponent({
   name: 'ElForm',
@@ -174,24 +161,22 @@ const CpfFieldStub = defineComponent({
   },
 })
 
+const defaultRoles = [
+  { id: 1, name: 'admin' },
+  { id: 2, name: 'teacher' },
+]
+
 describe('AdminUserForm', () => {
   beforeEach(() => {
     validateMock.mockReset()
     validateMock.mockResolvedValue(undefined)
-    fetchRolesMock.mockReset()
-    fetchRolesMock.mockResolvedValue([])
-    roleStoreState.roles = [
-      { id: 1, name: 'admin' },
-      { id: 2, name: 'teacher' },
-    ]
-    roleStoreState.loading = false
-    roleStoreState.error = null
   })
 
   it('applies cpf/phone mask UX settings and submits unmasked values in create mode', async () => {
     const wrapper = mount(AdminUserForm, {
       props: {
         submitLabel: 'Create user',
+        roles: defaultRoles,
       },
       global: {
         directives: {
@@ -233,7 +218,6 @@ describe('AdminUserForm', () => {
     await submitButton.trigger('click')
     await flushPromises()
 
-    expect(fetchRolesMock).toHaveBeenCalledTimes(1)
     expect(validateMock).toHaveBeenCalledTimes(1)
 
     const submitEvents = wrapper.emitted('submit')
@@ -253,6 +237,7 @@ describe('AdminUserForm', () => {
     const wrapper = mount(AdminUserForm, {
       props: {
         submitLabel: 'Create user',
+        roles: defaultRoles,
       },
       global: {
         directives: {
@@ -287,6 +272,7 @@ describe('AdminUserForm', () => {
       props: {
         isEdit: true,
         submitLabel: 'Save changes',
+        roles: defaultRoles,
         initialValues: {
           name: 'Existing User',
           email: 'existing@schoolmaster.test',
@@ -346,12 +332,61 @@ describe('AdminUserForm', () => {
     expect(submitEvents[0][0].password).toBeUndefined()
   })
 
+  it('hydrates role from initialValues.role.id when role_id is missing', async () => {
+    const wrapper = mount(AdminUserForm, {
+      props: {
+        isEdit: true,
+        submitLabel: 'Save changes',
+        roles: defaultRoles,
+        initialValues: {
+          name: 'Existing User',
+          email: 'existing@schoolmaster.test',
+          cpf: '12345678901',
+          phone: '11988887777',
+          role: { id: 2, name: 'teacher' },
+          status: 1,
+        },
+      },
+      global: {
+        directives: {
+          maska: {
+            mounted(el, binding) {
+              el.__maskaOnMaska = binding.value?.onMaska
+            },
+            updated(el, binding) {
+              el.__maskaOnMaska = binding.value?.onMaska
+            },
+          },
+        },
+        stubs: {
+          ElForm: ElFormStub,
+          ElFormItem: ElFormItemStub,
+          ElInput: ElInputStub,
+          ElSelect: ElSelectStub,
+          ElOption: ElOptionStub,
+          ElButton: ElButtonStub,
+          CpfField: CpfFieldStub,
+        },
+      },
+    })
+
+    const [nameInput] = wrapper.findAll('input')
+    await nameInput.setValue('Existing User Edited')
+
+    const submitButton = wrapper.findAll('button').find((node) => node.text() === 'Save changes')
+    await submitButton.trigger('click')
+    await flushPromises()
+
+    expect(wrapper.emitted('submit')?.[0]?.[0]?.role_id).toBe(2)
+  })
+
   it('does not emit submit when form validation fails', async () => {
     validateMock.mockRejectedValueOnce(new Error('invalid'))
 
     const wrapper = mount(AdminUserForm, {
       props: {
         submitLabel: 'Create user',
+        roles: defaultRoles,
       },
       global: {
         directives: {
@@ -388,6 +423,7 @@ describe('AdminUserForm', () => {
     const wrapper = mount(AdminUserForm, {
       props: {
         submitLabel: 'Create user',
+        roles: defaultRoles,
       },
       global: {
         directives: {

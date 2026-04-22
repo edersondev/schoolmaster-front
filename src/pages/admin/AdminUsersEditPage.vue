@@ -4,15 +4,19 @@ import { ElMessage } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 
 import AdminUserForm from '@/components/admin/users/AdminUserForm.vue'
+import { useRoleStore } from '@/stores/roleStore'
 import { useUserStore } from '@/stores/userStore'
 
 const route = useRoute()
 const router = useRouter()
+const roleStore = useRoleStore()
 const userStore = useUserStore()
 
 const userId = computed(() => route.params.id)
 const loading = computed(() => userStore.loading)
 const initialValues = computed(() => userStore.selectedUser || {})
+const roles = computed(() => roleStore.roles)
+const rolesLoading = computed(() => roleStore.loading)
 
 const fetchUser = async () => {
   try {
@@ -23,8 +27,16 @@ const fetchUser = async () => {
   }
 }
 
+const fetchRoles = async () => {
+  try {
+    await roleStore.fetchRoles()
+  } catch (error) {
+    ElMessage.error(error?.message || roleStore.error || 'Unable to load roles.')
+  }
+}
+
 onMounted(async () => {
-  await fetchUser()
+  await Promise.all([fetchUser(), fetchRoles()])
 })
 
 const handleSubmit = async (payload) => {
@@ -54,6 +66,8 @@ const handleCancel = () => {
       <AdminUserForm
         is-edit
         :loading="loading"
+        :roles="roles"
+        :roles-loading="rolesLoading"
         :initial-values="initialValues"
         submit-label="Save changes"
         @submit="handleSubmit"

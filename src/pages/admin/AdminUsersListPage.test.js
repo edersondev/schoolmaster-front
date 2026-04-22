@@ -5,7 +5,6 @@ import { ElButtonStub, ElInputStub } from '@/__tests__/adminTestUtils'
 
 const pushMock = vi.hoisted(() => vi.fn())
 const fetchUsersMock = vi.hoisted(() => vi.fn())
-const fetchRolesMock = vi.hoisted(() => vi.fn())
 const deleteUserMock = vi.hoisted(() => vi.fn())
 const messageSuccess = vi.hoisted(() => vi.fn())
 const messageError = vi.hoisted(() => vi.fn())
@@ -13,12 +12,6 @@ const confirmMock = vi.hoisted(() => vi.fn())
 
 const storeState = vi.hoisted(() => ({
   users: [],
-  loading: false,
-  error: null,
-}))
-
-const roleStoreState = vi.hoisted(() => ({
-  roles: [],
   loading: false,
   error: null,
 }))
@@ -34,13 +27,6 @@ vi.mock('@/stores/userStore', () => ({
     ...storeState,
     fetchUsers: fetchUsersMock,
     deleteUser: deleteUserMock,
-  }),
-}))
-
-vi.mock('@/stores/roleStore', () => ({
-  useRoleStore: () => ({
-    ...roleStoreState,
-    fetchRoles: fetchRolesMock,
   }),
 }))
 
@@ -81,25 +67,17 @@ describe('AdminUsersListPage', () => {
   beforeEach(() => {
     pushMock.mockReset()
     fetchUsersMock.mockReset()
-    fetchRolesMock.mockReset()
     deleteUserMock.mockReset()
     messageSuccess.mockClear()
     messageError.mockClear()
     confirmMock.mockReset()
     storeState.users = [
-      { id: 1, name: 'Admin User', email: 'admin@x.com', cpf: '111', phone: '999', role_id: 1, status: 1 },
-      { id: 2, name: 'Teacher User', email: 'teacher@x.com', cpf: '222', phone: '888', role_id: 2, status: 1 },
-    ]
-    roleStoreState.roles = [
-      { id: 1, name: 'admin' },
-      { id: 2, name: 'teacher' },
+      { id: 1, name: 'Admin User', email: 'admin@x.com', cpf: '111', phone: '999', role: { id: 1, name: 'admin' }, status: 1 },
+      { id: 2, name: 'Teacher User', email: 'teacher@x.com', cpf: '222', phone: '888', role: { id: 2, name: 'teacher' }, status: 1 },
     ]
     storeState.loading = false
     storeState.error = null
-    roleStoreState.loading = false
-    roleStoreState.error = null
     fetchUsersMock.mockResolvedValue(storeState.users)
-    fetchRolesMock.mockResolvedValue(roleStoreState.roles)
     deleteUserMock.mockResolvedValue(null)
     confirmMock.mockResolvedValue(true)
   })
@@ -117,7 +95,6 @@ describe('AdminUsersListPage', () => {
     await flushPromises()
 
     expect(fetchUsersMock).toHaveBeenCalledTimes(1)
-    expect(fetchRolesMock).toHaveBeenCalledTimes(1)
     expect(wrapper.text()).toContain('Users')
     expect(wrapper.text()).toContain('Rows: 2')
   })
@@ -182,5 +159,24 @@ describe('AdminUsersListPage', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('Rows: 0')
+  })
+
+  it('filters users by role label derived from user role object', async () => {
+    const wrapper = mount(AdminUsersListPage, {
+      global: {
+        stubs: {
+          ElButton: ElButtonStub,
+          ElInput: ElInputStub,
+        },
+      },
+    })
+
+    await flushPromises()
+
+    const searchInput = wrapper.find('input')
+    await searchInput.setValue('teacher')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Rows: 1')
   })
 })

@@ -4,10 +4,16 @@ import { mount, flushPromises } from '@vue/test-utils'
 
 const pushMock = vi.hoisted(() => vi.fn())
 const createUserMock = vi.hoisted(() => vi.fn())
+const fetchRolesMock = vi.hoisted(() => vi.fn())
 const messageSuccess = vi.hoisted(() => vi.fn())
 const messageError = vi.hoisted(() => vi.fn())
 
 const storeState = vi.hoisted(() => ({
+  loading: false,
+  error: null,
+}))
+const roleStoreState = vi.hoisted(() => ({
+  roles: [],
   loading: false,
   error: null,
 }))
@@ -22,6 +28,13 @@ vi.mock('@/stores/userStore', () => ({
   useUserStore: () => ({
     ...storeState,
     createUser: createUserMock,
+  }),
+}))
+
+vi.mock('@/stores/roleStore', () => ({
+  useRoleStore: () => ({
+    ...roleStoreState,
+    fetchRoles: fetchRolesMock,
   }),
 }))
 
@@ -63,11 +76,16 @@ describe('AdminUsersCreatePage', () => {
   beforeEach(() => {
     pushMock.mockReset()
     createUserMock.mockReset()
+    fetchRolesMock.mockReset()
     messageSuccess.mockClear()
     messageError.mockClear()
     storeState.loading = false
     storeState.error = null
+    roleStoreState.roles = [{ id: 1, name: 'admin' }]
+    roleStoreState.loading = false
+    roleStoreState.error = null
     createUserMock.mockResolvedValue({ id: 1 })
+    fetchRolesMock.mockResolvedValue(roleStoreState.roles)
   })
 
   it('creates a user and redirects to users list', async () => {
@@ -95,5 +113,13 @@ describe('AdminUsersCreatePage', () => {
     await wrapper.findAll('button')[1].trigger('click')
 
     expect(pushMock).toHaveBeenCalledWith('/admin/users')
+  })
+
+  it('fetches roles on mount', async () => {
+    mount(AdminUsersCreatePage)
+
+    await flushPromises()
+
+    expect(fetchRolesMock).toHaveBeenCalledTimes(1)
   })
 })
