@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils'
 import { baseAdminStubs } from '@/__tests__/adminTestUtils'
 
 vi.mock('vue-router', () => ({
-  useRoute: () => ({ path: '/admin/classes' }),
+  useRoute: () => ({ path: '/admin/schools' }),
 }))
 
 import AdminSidebar from './AdminSidebar.vue'
@@ -22,9 +22,7 @@ describe('AdminSidebar', () => {
 
     expect(wrapper.text()).toContain('Dashboard')
     expect(wrapper.text()).toContain('Users')
-    expect(wrapper.text()).toContain('Classes')
-    expect(wrapper.text()).toContain('Programs')
-    expect(wrapper.text()).toContain('Assignments')
+    expect(wrapper.text()).toContain('Schools')
   })
 
   it('hides quick notes when collapsed', () => {
