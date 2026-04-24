@@ -21,6 +21,7 @@
     "element-plus": "^2.13.5",
     "maska": "^3.2.0",
     "pinia": "^3.0.4",
+    "pluralize": "^8.0.0",
     "tailwindcss": "^4.2.1",
     "vue": "^3.5.29",
     "vue-router": "^5.0.3"
