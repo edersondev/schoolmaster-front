@@ -62,6 +62,19 @@ describe('userStore', () => {
 
     const users = await store.fetchUsers()
 
+    expect(getAllUsersMock).toHaveBeenCalledWith({ include: 'role' })
+    expect(users).toEqual([{ id: 1 }, { id: 2 }])
+    expect(store.users).toEqual([{ id: 1 }, { id: 2 }])
+  })
+
+  it('fetches users list forwarding custom params', async () => {
+    const { useUserStore } = await import('@/stores/userStore')
+    const store = useUserStore()
+    getAllUsersMock.mockResolvedValue([{ id: 1 }, { id: 2 }])
+
+    const users = await store.fetchUsers({ include: 'role,permissions' })
+
+    expect(getAllUsersMock).toHaveBeenCalledWith({ include: 'role,permissions' })
     expect(users).toEqual([{ id: 1 }, { id: 2 }])
     expect(store.users).toEqual([{ id: 1 }, { id: 2 }])
   })

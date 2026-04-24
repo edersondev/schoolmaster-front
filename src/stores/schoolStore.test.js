@@ -81,6 +81,30 @@ describe('schoolStore', () => {
     expect(store.referenceData.pedagogicalApproaches).toEqual([{ id: 2, name: 'Constructivist' }])
   })
 
+  it('fetches schools forwarding undefined params by default', async () => {
+    const { useSchoolStore } = await import('@/stores/schoolStore')
+    const store = useSchoolStore()
+    getAllSchoolsMock.mockResolvedValue([{ id: 1 }, { id: 2 }])
+
+    const schools = await store.fetchSchools()
+
+    expect(getAllSchoolsMock).toHaveBeenCalledWith(undefined)
+    expect(schools).toEqual([{ id: 1 }, { id: 2 }])
+    expect(store.schools).toEqual([{ id: 1 }, { id: 2 }])
+  })
+
+  it('fetches schools forwarding custom query params', async () => {
+    const { useSchoolStore } = await import('@/stores/schoolStore')
+    const store = useSchoolStore()
+    getAllSchoolsMock.mockResolvedValue([{ id: 1 }, { id: 2 }])
+
+    const schools = await store.fetchSchools({ include: 'address' })
+
+    expect(getAllSchoolsMock).toHaveBeenCalledWith({ include: 'address' })
+    expect(schools).toEqual([{ id: 1 }, { id: 2 }])
+    expect(store.schools).toEqual([{ id: 1 }, { id: 2 }])
+  })
+
   it('creates school and linked address when school write returns payload', async () => {
     const { useSchoolStore } = await import('@/stores/schoolStore')
     const store = useSchoolStore()

@@ -44,12 +44,12 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (params = { include: 'role' }) => {
     loading.value = true
     error.value = null
 
     try {
-      const data = await userService.getAllUsers()
+      const data = await userService.getAllUsers(params)
       users.value = Array.isArray(data) ? data : data?.data || []
       return users.value
     } catch (err) {

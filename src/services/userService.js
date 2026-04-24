@@ -25,8 +25,8 @@ const updateProfile = async (payload) => {
   return normalizeWriteResponse(data)
 }
 
-const getAllUsers = async () => {
-  const { data } = await api.get('/users')
+const getAllUsers = async (params = {}) => {
+  const { data } = await api.get('/users', { params })
   return data
 }
 

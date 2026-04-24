@@ -36,6 +36,26 @@ describe('schoolService', () => {
     expect(legalNatures).toEqual([{ id: 1, label: 'For Profit' }])
   })
 
+  it('fetches all schools without query params', async () => {
+    const schoolService = (await import('@/services/schoolService')).default
+    apiGet.mockResolvedValue({ data: [{ id: 1 }, { id: 2 }] })
+
+    const schools = await schoolService.getAllSchools()
+
+    expect(apiGet).toHaveBeenCalledWith('/schools')
+    expect(schools).toEqual([{ id: 1 }, { id: 2 }])
+  })
+
+  it('fetches all schools with query params', async () => {
+    const schoolService = (await import('@/services/schoolService')).default
+    apiGet.mockResolvedValue({ data: [{ id: 1 }, { id: 2 }] })
+
+    const schools = await schoolService.getAllSchools({ include: 'address' })
+
+    expect(apiGet).toHaveBeenCalledWith('/schools', { params: { include: 'address' } })
+    expect(schools).toEqual([{ id: 1 }, { id: 2 }])
+  })
+
   it('checks cnpj availability', async () => {
     const schoolService = (await import('@/services/schoolService')).default
     apiGet.mockResolvedValue({ data: { available: true } })

@@ -73,12 +73,12 @@ export const useSchoolStore = defineStore('school', () => {
     return Object.fromEntries(pairs)
   })
 
-  const fetchSchools = async () => {
+  const fetchSchools = async (params) => {
     loading.value = true
     error.value = null
 
     try {
-      const data = await schoolService.getAllSchools()
+      const data = await schoolService.getAllSchools(params)
       schools.value = Array.isArray(data) ? data : data?.data || []
       return schools.value
     } catch (err) {

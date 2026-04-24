@@ -60,7 +60,17 @@ describe('userService', () => {
 
     const users = await userService.getAllUsers()
 
-    expect(apiGet).toHaveBeenCalledWith('/users')
+    expect(apiGet).toHaveBeenCalledWith('/users', { params: {} })
+    expect(users).toEqual([{ id: 1 }, { id: 2 }])
+  })
+
+  it('fetches all users with custom params', async () => {
+    const userService = (await import('@/services/userService')).default
+    apiGet.mockResolvedValue({ data: [{ id: 1 }, { id: 2 }] })
+
+    const users = await userService.getAllUsers({ include: 'role' })
+
+    expect(apiGet).toHaveBeenCalledWith('/users', { params: { include: 'role' } })
     expect(users).toEqual([{ id: 1 }, { id: 2 }])
   })
 

@@ -8,7 +8,12 @@ const normalizeWriteResponse = (data) => {
   return data
 }
 
-const getAllSchools = async () => {
+const getAllSchools = async (params) => {
+  if (params) {
+    const { data } = await api.get('/schools', { params })
+    return data
+  }
+
   const { data } = await api.get('/schools')
   return data
 }
