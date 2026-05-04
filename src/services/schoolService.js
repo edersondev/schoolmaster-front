@@ -82,6 +82,11 @@ const getAllSchoolAddresses = async (params) => {
   return data
 }
 
+const getAddressByZipCode = async (zipCode) => {
+  const { data } = await api.get(`/get-address/${zipCode}`)
+  return data
+}
+
 const createSchoolAddress = async (payload) => {
   const { data } = await api.post('/school_addresses', payload)
   return normalizeWriteResponse(data)
@@ -111,6 +116,7 @@ export default {
   getModalities,
   getPedagogicalApproaches,
   getAllSchoolAddresses,
+  getAddressByZipCode,
   createSchoolAddress,
   updateSchoolAddress,
   deleteSchoolAddress,

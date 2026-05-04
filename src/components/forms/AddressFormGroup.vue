@@ -1,6 +1,8 @@
 <script setup>
-import { computed, shallowRef } from 'vue'
+import { computed, shallowRef, watch } from 'vue'
 import { vMaska } from 'maska/vue'
+
+import schoolService from '@/services/schoolService'
 
 const props = defineProps({
   modelValue: {
@@ -39,6 +41,8 @@ const emit = defineEmits(['update:modelValue'])
 const model = computed(() => props.modelValue || {})
 
 const zipCodeMasked = shallowRef(model.value.zip_code || '')
+const isLookingUpZipCode = shallowRef(false)
+const zipCodeLookupRequestId = shallowRef(0)
 
 const digitsOnly = (value) => String(value || '').replace(/\D/g, '')
 
@@ -55,10 +59,82 @@ const updateAddressNumber = (value) => {
   updateModel('number', digitsOnly(value))
 }
 
+const setAutoFilledFields = (value = {}) => {
+  emit('update:modelValue', {
+    ...model.value,
+    street: value.street ?? '',
+    neighborhood: value.neighborhood ?? '',
+    city: value.city ?? '',
+    state: value.state ?? '',
+  })
+}
+
+const clearAutoFilledFields = () => {
+  setAutoFilledFields()
+}
+
 const vMaskaZipCodeOptions = {
-  onMaska: (detail) => updateModel('zip_code', detail?.unmasked),
   mask: '#####-###',
 }
+
+watch(
+  () => model.value.zip_code,
+  (value) => {
+    const zipCodeDigits = digitsOnly(value)
+
+    if (digitsOnly(zipCodeMasked.value) !== zipCodeDigits) {
+      zipCodeMasked.value = zipCodeDigits
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  zipCodeMasked,
+  (value) => {
+    const zipCodeDigits = digitsOnly(value)
+
+    if (zipCodeDigits !== digitsOnly(model.value.zip_code)) {
+      updateModel('zip_code', zipCodeDigits)
+    }
+  }
+)
+
+watch(
+  () => digitsOnly(model.value.zip_code),
+  async (zipCodeDigits) => {
+    zipCodeLookupRequestId.value += 1
+    const requestId = zipCodeLookupRequestId.value
+
+    if (zipCodeDigits.length !== 8 || props.disabled || props.readonly) {
+      isLookingUpZipCode.value = false
+      clearAutoFilledFields()
+      return
+    }
+
+    isLookingUpZipCode.value = true
+
+    try {
+      const response = await schoolService.getAddressByZipCode(zipCodeDigits)
+
+      if (requestId !== zipCodeLookupRequestId.value) {
+        return
+      }
+
+      setAutoFilledFields(response || {})
+    } catch {
+      if (requestId !== zipCodeLookupRequestId.value) {
+        return
+      }
+
+      clearAutoFilledFields()
+    } finally {
+      if (requestId === zipCodeLookupRequestId.value) {
+        isLookingUpZipCode.value = false
+      }
+    }
+  }
+)
 </script>
 
 <template>
@@ -67,12 +143,24 @@ const vMaskaZipCodeOptions = {
       <h3 class="mb-4 text-lg font-semibold">{{ title }}</h3>
     </div>
 
+    <ElFormItem label="Zip Code" :prop="formProp('zip_code')">
+      <ElInput
+        v-maska="vMaskaZipCodeOptions"
+        v-model="zipCodeMasked"
+        placeholder="00000-000"
+        inputmode="numeric"
+        :maxlength="9"
+        :disabled="disabled || isLookingUpZipCode"
+        :readonly="readonly"
+      />
+    </ElFormItem>
+
     <ElFormItem label="Street" :prop="formProp('street')">
       <ElInput
         :model-value="model.street"
         placeholder="Street"
         :disabled="disabled"
-        :readonly="readonly"
+        readonly
         @update:model-value="updateModel('street', $event)"
       />
     </ElFormItem>
@@ -103,7 +191,7 @@ const vMaskaZipCodeOptions = {
         :model-value="model.neighborhood"
         placeholder="Neighborhood"
         :disabled="disabled"
-        :readonly="readonly"
+        readonly
         @update:model-value="updateModel('neighborhood', $event)"
       />
     </ElFormItem>
@@ -113,7 +201,7 @@ const vMaskaZipCodeOptions = {
         :model-value="model.city"
         placeholder="City"
         :disabled="disabled"
-        :readonly="readonly"
+        readonly
         @update:model-value="updateModel('city', $event)"
       />
     </ElFormItem>
@@ -123,20 +211,8 @@ const vMaskaZipCodeOptions = {
         :model-value="model.state"
         placeholder="State"
         :disabled="disabled"
-        :readonly="readonly"
+        readonly
         @update:model-value="updateModel('state', $event)"
-      />
-    </ElFormItem>
-
-    <ElFormItem label="Zip Code" :prop="formProp('zip_code')">
-      <ElInput
-        v-maska="vMaskaZipCodeOptions"
-        v-model="zipCodeMasked"
-        placeholder="00000-000"
-        inputmode="numeric"
-        :maxlength="9"
-        :disabled="disabled"
-        :readonly="readonly"
       />
     </ElFormItem>
 

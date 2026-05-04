@@ -94,6 +94,16 @@ describe('schoolService', () => {
     expect(addresses).toEqual([{ id: 8, school_id: 2 }])
   })
 
+  it('fetches address by zip code', async () => {
+    const schoolService = (await import('@/services/schoolService')).default
+    apiGet.mockResolvedValue({ data: { street: 'Rua Exemplo', city: 'Campinas' } })
+
+    const address = await schoolService.getAddressByZipCode('13010000')
+
+    expect(apiGet).toHaveBeenCalledWith('/get-address/13010000')
+    expect(address).toEqual({ street: 'Rua Exemplo', city: 'Campinas' })
+  })
+
   it('normalizes empty responses from writes', async () => {
     const schoolService = (await import('@/services/schoolService')).default
     apiPatch.mockResolvedValue({ data: '' })

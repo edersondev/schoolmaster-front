@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import data from './db.json' with { type: 'json' }
 
 import createAuthRoutes from './routes/auth.routes.js'
+import createAddressRoutes from './routes/address.routes.js'
 import createSchoolRoutes from './routes/school.routes.js'
 import loadEntitiesRoutes from './middleware/load.entities.routes.js'
 
@@ -20,6 +21,7 @@ const PATH_PREFIX = '/api'
 
 // Mount auth routes before the default router
 server.use(createAuthRoutes(router, PATH_PREFIX))
+server.use(createAddressRoutes(router, PATH_PREFIX))
 server.use(createSchoolRoutes(router, PATH_PREFIX))
 server.use(loadEntitiesRoutes(router, PATH_PREFIX))
 
