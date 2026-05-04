@@ -40,6 +40,39 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'cancel'])
 
 const formRef = shallowRef(null)
+const activeTab = shallowRef('basic')
+
+const fieldTabMap = {
+  inep_code: 'basic',
+  status: 'basic',
+  name: 'basic',
+  trade_name: 'basic',
+  legal_name: 'basic',
+  document: 'basic',
+  email: 'basic',
+  phone: 'basic',
+  website: 'basic',
+  description: 'basic',
+  administrative_type_id: 'institutional',
+  legal_nature_id: 'institutional',
+  management_type_id: 'institutional',
+  pedagogical_approach_id: 'institutional',
+  education_level_ids: 'institutional',
+  modality_ids: 'institutional',
+  timezone: 'institutional',
+  language: 'institutional',
+  address_street: 'address',
+  address_number: 'address',
+  address_complement: 'address',
+  address_neighborhood: 'address',
+  address_city: 'address',
+  address_state: 'address',
+  address_zip_code: 'address',
+  address_country: 'address',
+  logo_path: 'branding',
+  primary_color: 'branding',
+  secondary_color: 'branding',
+}
 
 const toNumberOrNull = (value) => {
   const parsed = Number(value || 0)
@@ -281,11 +314,26 @@ const serializePayload = () => {
   return payload
 }
 
+const focusFirstInvalidTab = (validationError) => {
+  const invalidFields = validationError && typeof validationError === 'object'
+    ? Object.keys(validationError)
+    : []
+
+  const firstInvalidTab = invalidFields
+    .map((field) => fieldTabMap[field])
+    .find(Boolean)
+
+  if (firstInvalidTab) {
+    activeTab.value = firstInvalidTab
+  }
+}
+
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
     emit('submit', serializePayload())
-  } catch {
+  } catch (validationError) {
+    focusFirstInvalidTab(validationError)
     ElMessage.error('Please fix the form errors.')
   }
 }
@@ -305,30 +353,46 @@ watch(
 
 <template>
   <ElForm ref="formRef" :model="form" :rules="rules" label-position="top">
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-      <AdminSchoolBasicInfoGroup
-        v-model="basicInfoModel"
-        :is-edit="isEdit"
-      />
+    <ElTabs v-model="activeTab">
+      <ElTabPane label="Basic Information" name="basic">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <AdminSchoolBasicInfoGroup
+            v-model="basicInfoModel"
+            :is-edit="isEdit"
+          />
+        </div>
+      </ElTabPane>
 
-      <AdminSchoolInstitutionalDataGroup
-        v-model="institutionalDataModel"
-        :administrative-types="administrativeTypeOptions"
-        :legal-natures="legalNatureOptions"
-        :management-types="managementTypeOptions"
-        :pedagogical-approaches="pedagogicalApproachOptions"
-        :education-levels="educationLevelsOptions"
-        :modalities="modalityOptions"
-      />
+      <ElTabPane label="Institutional Data" name="institutional">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <AdminSchoolInstitutionalDataGroup
+            v-model="institutionalDataModel"
+            :administrative-types="administrativeTypeOptions"
+            :legal-natures="legalNatureOptions"
+            :management-types="managementTypeOptions"
+            :pedagogical-approaches="pedagogicalApproachOptions"
+            :education-levels="educationLevelsOptions"
+            :modalities="modalityOptions"
+          />
+        </div>
+      </ElTabPane>
 
-      <AddressFormGroup
-        v-model="addressModel"
-        title="Address"
-        prop-prefix="address_"
-      />
+      <ElTabPane label="Address" name="address">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <AddressFormGroup
+            v-model="addressModel"
+            title="Address"
+            prop-prefix="address_"
+          />
+        </div>
+      </ElTabPane>
 
-      <AdminSchoolBrandingGroup v-model="brandingModel" />
-    </div>
+      <ElTabPane label="Branding" name="branding">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <AdminSchoolBrandingGroup v-model="brandingModel" />
+        </div>
+      </ElTabPane>
+    </ElTabs>
 
     <div class="mt-8 flex justify-end gap-4">
       <ElButton @click="handleCancel">Cancel</ElButton>
