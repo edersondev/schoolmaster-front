@@ -89,14 +89,25 @@ export const useSchoolStore = defineStore('school', () => {
     }
   }
 
-  const fetchSchoolAddresses = async () => {
+  const fetchSchoolAddresses = async (params) => {
     loading.value = true
     error.value = null
 
     try {
-      const data = await schoolService.getAllSchoolAddresses()
-      schoolAddresses.value = Array.isArray(data) ? data : data?.data || []
-      return schoolAddresses.value
+      const data = await schoolService.getAllSchoolAddresses(params)
+      const addresses = Array.isArray(data) ? data : data?.data || []
+
+      if (params?.school_id) {
+        const schoolId = String(params.school_id)
+        schoolAddresses.value = [
+          ...schoolAddresses.value.filter((address) => String(address.school_id) !== schoolId),
+          ...addresses,
+        ]
+      } else {
+        schoolAddresses.value = addresses
+      }
+
+      return addresses
     } catch (err) {
       error.value = err?.message || 'Unable to load school addresses.'
       throw err
@@ -170,13 +181,16 @@ export const useSchoolStore = defineStore('school', () => {
       ...normalizeAddressPayload(payloadAddress),
     }
 
-    if (!schoolAddresses.value.length) {
-      await fetchSchoolAddresses()
-    }
+    const schoolIdKey = String(schoolId)
 
-    const existingAddress = schoolAddresses.value.find(
-      (address) => String(address.school_id) === String(schoolId)
+    let existingAddress = schoolAddresses.value.find(
+      (address) => String(address.school_id) === schoolIdKey
     )
+
+    if (!existingAddress) {
+      const addresses = await fetchSchoolAddresses({ school_id: schoolId })
+      existingAddress = Array.isArray(addresses) ? addresses[0] || null : null
+    }
 
     if (existingAddress) {
       const updatedAddress = await schoolService.updateSchoolAddress(existingAddress.id, addressPayload)
@@ -186,7 +200,7 @@ export const useSchoolStore = defineStore('school', () => {
           String(address.id) === String(existingAddress.id) ? updatedAddress : address
         ))
       } else {
-        await fetchSchoolAddresses()
+        await fetchSchoolAddresses({ school_id: schoolId })
       }
 
       return
@@ -195,9 +209,12 @@ export const useSchoolStore = defineStore('school', () => {
     const createdAddress = await schoolService.createSchoolAddress(addressPayload)
 
     if (createdAddress) {
-      schoolAddresses.value = [createdAddress, ...schoolAddresses.value]
+      schoolAddresses.value = [
+        ...schoolAddresses.value.filter((address) => String(address.school_id) !== schoolIdKey),
+        createdAddress,
+      ]
     } else {
-      await fetchSchoolAddresses()
+      await fetchSchoolAddresses({ school_id: schoolId })
     }
   }
 
@@ -270,7 +287,13 @@ export const useSchoolStore = defineStore('school', () => {
     error.value = null
 
     try {
-      const existingAddress = getAddressBySchoolId(id)
+      let existingAddress = getAddressBySchoolId(id)
+
+      if (!existingAddress) {
+        const addresses = await fetchSchoolAddresses({ school_id: id })
+        existingAddress = Array.isArray(addresses) ? addresses[0] || null : null
+      }
+
       if (existingAddress?.id) {
         await schoolService.deleteSchoolAddress(existingAddress.id)
         schoolAddresses.value = schoolAddresses.value.filter((address) => String(address.id) !== String(existingAddress.id))

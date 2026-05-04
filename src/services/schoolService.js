@@ -75,8 +75,10 @@ const getPedagogicalApproaches = async () => {
   return data
 }
 
-const getAllSchoolAddresses = async () => {
-  const { data } = await api.get('/school_addresses')
+const getAllSchoolAddresses = async (params) => {
+  const { data } = await api.get('/school_addresses', {
+    params,
+  })
   return data
 }
 

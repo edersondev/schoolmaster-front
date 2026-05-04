@@ -82,6 +82,18 @@ describe('schoolService', () => {
     expect(updated).toEqual({ id: 10, city: 'Campinas' })
   })
 
+  it('fetches school addresses with query params', async () => {
+    const schoolService = (await import('@/services/schoolService')).default
+    apiGet.mockResolvedValue({ data: [{ id: 8, school_id: 2 }] })
+
+    const addresses = await schoolService.getAllSchoolAddresses({ school_id: 2 })
+
+    expect(apiGet).toHaveBeenCalledWith('/school_addresses', {
+      params: { school_id: 2 },
+    })
+    expect(addresses).toEqual([{ id: 8, school_id: 2 }])
+  })
+
   it('normalizes empty responses from writes', async () => {
     const schoolService = (await import('@/services/schoolService')).default
     apiPatch.mockResolvedValue({ data: '' })

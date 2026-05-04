@@ -5,8 +5,6 @@ import { ElButtonStub, ElInputStub } from '@/__tests__/adminTestUtils'
 
 const pushMock = vi.hoisted(() => vi.fn())
 const fetchSchoolsMock = vi.hoisted(() => vi.fn())
-const fetchReferenceDataMock = vi.hoisted(() => vi.fn())
-const fetchSchoolAddressesMock = vi.hoisted(() => vi.fn())
 const deleteSchoolMock = vi.hoisted(() => vi.fn())
 const messageSuccess = vi.hoisted(() => vi.fn())
 const messageError = vi.hoisted(() => vi.fn())
@@ -14,10 +12,6 @@ const confirmMock = vi.hoisted(() => vi.fn())
 
 const storeState = vi.hoisted(() => ({
   schools: [],
-  schoolAddressesBySchoolId: {},
-  referenceData: {
-    administrativeTypes: [],
-  },
   loading: false,
   error: null,
 }))
@@ -32,8 +26,6 @@ vi.mock('@/stores/schoolStore', () => ({
   useSchoolStore: () => ({
     ...storeState,
     fetchSchools: fetchSchoolsMock,
-    fetchReferenceData: fetchReferenceDataMock,
-    fetchSchoolAddresses: fetchSchoolAddressesMock,
     deleteSchool: deleteSchoolMock,
   }),
 }))
@@ -75,33 +67,33 @@ describe('AdminSchoolsListPage', () => {
   beforeEach(() => {
     pushMock.mockReset()
     fetchSchoolsMock.mockReset()
-    fetchReferenceDataMock.mockReset()
-    fetchSchoolAddressesMock.mockReset()
     deleteSchoolMock.mockReset()
     messageSuccess.mockClear()
     messageError.mockClear()
     confirmMock.mockReset()
 
     storeState.schools = [
-      { id: 1, name: 'School A', email: 'a@test.com', document: '11111111000111', administrative_type_id: 1 },
-      { id: 2, name: 'School B', email: 'b@test.com', document: '22222222000122', administrative_type_id: 2 },
+      {
+        id: 1,
+        name: 'School A',
+        email: 'a@test.com',
+        document: '11111111000111',
+        administrative_type_id: 1,
+        administrative_type: { id: 1, label: 'Public' },
+      },
+      {
+        id: 2,
+        name: 'School B',
+        email: 'b@test.com',
+        document: '22222222000122',
+        administrative_type_id: 2,
+        administrative_type: { id: 2, label: 'Private' },
+      },
     ]
-    storeState.schoolAddressesBySchoolId = {
-      '1': { city: 'Campinas', state: 'SP' },
-      '2': { city: 'Santos', state: 'SP' },
-    }
-    storeState.referenceData = {
-      administrativeTypes: [
-        { id: 1, label: 'Public' },
-        { id: 2, label: 'Private' },
-      ],
-    }
     storeState.loading = false
     storeState.error = null
 
     fetchSchoolsMock.mockResolvedValue(storeState.schools)
-    fetchReferenceDataMock.mockResolvedValue(storeState.referenceData)
-    fetchSchoolAddressesMock.mockResolvedValue(storeState.schoolAddressesBySchoolId)
     deleteSchoolMock.mockResolvedValue(null)
     confirmMock.mockResolvedValue(true)
   })
@@ -118,13 +110,11 @@ describe('AdminSchoolsListPage', () => {
 
     await flushPromises()
 
-    expect(fetchSchoolsMock).toHaveBeenCalledTimes(1)
-    expect(fetchReferenceDataMock).toHaveBeenCalledTimes(1)
-    expect(fetchSchoolAddressesMock).toHaveBeenCalledTimes(1)
+    expect(fetchSchoolsMock).toHaveBeenCalledWith({ include: 'administrative_type' })
     expect(wrapper.text()).toContain('Rows: 2')
   })
 
-  it('filters schools by city and navigates to edit page', async () => {
+  it('filters schools by administrative type and navigates to edit page', async () => {
     const wrapper = mount(AdminSchoolsListPage, {
       global: {
         stubs: {
@@ -137,7 +127,7 @@ describe('AdminSchoolsListPage', () => {
     await flushPromises()
 
     const searchInput = wrapper.find('input')
-    await searchInput.setValue('campinas')
+    await searchInput.setValue('public')
     await flushPromises()
 
     expect(wrapper.text()).toContain('Rows: 1')

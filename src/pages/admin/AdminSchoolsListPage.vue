@@ -12,15 +12,6 @@ const searchQuery = shallowRef('')
 
 const loading = computed(() => schoolStore.loading)
 
-const administrativeTypeLabelMap = computed(() => {
-  const map = {}
-  schoolStore.referenceData.administrativeTypes.forEach((item) => {
-    map[String(item.id)] = item.label
-  })
-
-  return map
-})
-
 const filteredSchools = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
   if (!query) {
@@ -28,16 +19,13 @@ const filteredSchools = computed(() => {
   }
 
   return schoolStore.schools.filter((school) => {
-    const address = schoolStore.schoolAddressesBySchoolId[String(school.id)]
-    const administrativeTypeLabel = administrativeTypeLabelMap.value[String(school.administrative_type_id)] || ''
+    const administrativeTypeLabel = school.administrative_type?.label || school.administrative_type?.name || ''
 
     return [
       school.name,
       school.email,
       school.document,
       administrativeTypeLabel,
-      address?.city,
-      address?.state,
     ]
       .map((value) => String(value || '').toLowerCase())
       .some((value) => value.includes(query))
@@ -46,11 +34,7 @@ const filteredSchools = computed(() => {
 
 const fetchSchools = async () => {
   try {
-    await Promise.all([
-      schoolStore.fetchSchools(),
-      schoolStore.fetchReferenceData(),
-      schoolStore.fetchSchoolAddresses(),
-    ])
+    await schoolStore.fetchSchools({ include: 'administrative_type' })
   } catch (error) {
     ElMessage.error(error?.message || schoolStore.error || 'Unable to load schools.')
   }
@@ -107,7 +91,7 @@ const handleDelete = async (school) => {
     <div class="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-4">
       <ElInput
         v-model="searchQuery"
-        placeholder="Search by name, email, cnpj, type, city or state"
+        placeholder="Search by name, email, cnpj or type"
         clearable
         size="large"
       />
@@ -117,7 +101,6 @@ const handleDelete = async (school) => {
       <AdminSchoolsTable
         :schools="filteredSchools"
         :loading="loading"
-        :administrative-type-label-map="administrativeTypeLabelMap"
         @edit="goToEdit"
         @delete="handleDelete"
       />

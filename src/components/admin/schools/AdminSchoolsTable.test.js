@@ -45,7 +45,7 @@ const ElButtonStub = defineComponent({
 })
 
 describe('AdminSchoolsTable', () => {
-  it('formats document as cnpj and renders mapped administrative type + status', () => {
+  it('formats document as cnpj and renders included administrative type + status', () => {
     const wrapper = mount(AdminSchoolsTable, {
       props: {
         schools: [
@@ -54,13 +54,13 @@ describe('AdminSchoolsTable', () => {
             name: 'School A',
             email: 'a@test.com',
             document: '12345678000190',
-            administrative_type_id: 2,
+            administrative_type: {
+              id: 2,
+              label: 'Private',
+            },
             status: 1,
           },
         ],
-        administrativeTypeLabelMap: {
-          '2': 'Private',
-        },
       },
       global: {
         stubs: {
@@ -73,7 +73,7 @@ describe('AdminSchoolsTable', () => {
 
     const vm = wrapper.vm
     expect(vm.formatCnpj('12345678000190')).toBe('12.345.678/0001-90')
-    expect(vm.formatAdministrativeType(2)).toBe('Private')
+    expect(vm.formatAdministrativeType({ id: 2, label: 'Private' })).toBe('Private')
     expect(vm.formatStatusLabel(1)).toBe('Active')
   })
 

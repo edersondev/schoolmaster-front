@@ -14,10 +14,7 @@ const referenceData = computed(() => schoolStore.referenceData)
 
 const loadReferenceData = async () => {
   try {
-    await Promise.all([
-      schoolStore.fetchReferenceData(),
-      schoolStore.fetchSchoolAddresses(),
-    ])
+    await schoolStore.fetchReferenceData()
   } catch (error) {
     ElMessage.error(error?.message || schoolStore.error || 'Unable to load school form data.')
   }

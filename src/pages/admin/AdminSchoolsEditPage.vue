@@ -30,7 +30,7 @@ const fetchSchool = async () => {
   try {
     await Promise.all([
       schoolStore.fetchReferenceData(),
-      schoolStore.fetchSchoolAddresses(),
+      schoolStore.fetchSchoolAddresses({ school_id: schoolId.value }),
       schoolStore.fetchSchoolById(schoolId.value),
     ])
   } catch (error) {

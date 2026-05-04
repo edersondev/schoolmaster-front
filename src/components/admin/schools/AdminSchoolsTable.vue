@@ -10,10 +10,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  administrativeTypeLabelMap: {
-    type: Object,
-    default: () => ({}),
-  },
 })
 
 const emit = defineEmits(['edit', 'delete'])
@@ -32,12 +28,12 @@ const formatCnpj = (document) => {
   return cnpjMask.masked(value)
 }
 
-const formatAdministrativeType = (administrativeTypeId) => {
-  if (!administrativeTypeId) {
+const formatAdministrativeType = (administrativeType) => {
+  if (!administrativeType) {
     return '-'
   }
 
-  return props.administrativeTypeLabelMap[String(administrativeTypeId)] || '-'
+  return administrativeType.label || administrativeType.name || '-'
 }
 
 const handleEdit = (school) => {
@@ -59,7 +55,7 @@ const handleDelete = (school) => {
     </ElTableColumn>
     <ElTableColumn label="Administrative Type" min-width="170">
       <template #default="{ row }">
-        {{ formatAdministrativeType(row.administrative_type_id) }}
+        {{ formatAdministrativeType(row.administrative_type) }}
       </template>
     </ElTableColumn>
     <ElTableColumn label="Status" min-width="100">
