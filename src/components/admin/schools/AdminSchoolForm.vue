@@ -383,6 +383,7 @@ watch(
             v-model="addressModel"
             title="Address"
             prop-prefix="address_"
+            :is-edit="isEdit"
           />
         </div>
       </ElTabPane>

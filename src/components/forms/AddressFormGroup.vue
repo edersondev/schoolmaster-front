@@ -1,6 +1,7 @@
 <script setup>
-import { computed, shallowRef, watch } from 'vue'
+import { computed, inject, nextTick, shallowRef, watch } from 'vue'
 import { vMaska } from 'maska/vue'
+import { formContextKey } from 'element-plus'
 
 import schoolService from '@/services/schoolService'
 
@@ -26,6 +27,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  isEdit: {
+    type: Boolean,
+    default: false,
+  },
   disabled: {
     type: Boolean,
     default: false,
@@ -39,14 +44,17 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const model = computed(() => props.modelValue || {})
+const formContext = inject(formContextKey, undefined)
 
 const zipCodeMasked = shallowRef(model.value.zip_code || '')
 const isLookingUpZipCode = shallowRef(false)
 const zipCodeLookupRequestId = shallowRef(0)
+const hasUserEditedZipCode = shallowRef(false)
 
 const digitsOnly = (value) => String(value || '').replace(/\D/g, '')
 
 const formProp = (field) => `${props.propPrefix}${field}`
+const autoFilledFieldNames = ['zip_code', 'street', 'neighborhood', 'city', 'state']
 
 const updateModel = (field, value) => {
   emit('update:modelValue', {
@@ -73,6 +81,11 @@ const clearAutoFilledFields = () => {
   setAutoFilledFields()
 }
 
+const clearAddressValidation = async () => {
+  await nextTick()
+  formContext?.clearValidate(autoFilledFieldNames.map(formProp))
+}
+
 const vMaskaZipCodeOptions = {
   mask: '#####-###',
 }
@@ -95,6 +108,7 @@ watch(
     const zipCodeDigits = digitsOnly(value)
 
     if (zipCodeDigits !== digitsOnly(model.value.zip_code)) {
+      hasUserEditedZipCode.value = true
       updateModel('zip_code', zipCodeDigits)
     }
   }
@@ -105,6 +119,15 @@ watch(
   async (zipCodeDigits) => {
     zipCodeLookupRequestId.value += 1
     const requestId = zipCodeLookupRequestId.value
+
+    if (props.isEdit && !hasUserEditedZipCode.value) {
+      isLookingUpZipCode.value = false
+      return
+    }
+
+    if (props.isEdit) {
+      clearAutoFilledFields()
+    }
 
     if (zipCodeDigits.length !== 8 || props.disabled || props.readonly) {
       isLookingUpZipCode.value = false
@@ -122,6 +145,7 @@ watch(
       }
 
       setAutoFilledFields(response || {})
+      await clearAddressValidation()
     } catch {
       if (requestId !== zipCodeLookupRequestId.value) {
         return
