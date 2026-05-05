@@ -5,14 +5,28 @@ import { useRouter, useRoute } from 'vue-router'
 
 import AdminSchoolForm from '@/components/admin/schools/AdminSchoolForm.vue'
 import { useSchoolStore } from '@/stores/schoolStore'
+import { useAuthStore } from '@/stores/authStore'
+import { useUserStore } from '@/stores/userStore'
 
 const router = useRouter()
 const route = useRoute()
 const schoolStore = useSchoolStore()
+const authStore = useAuthStore()
+const userStore = useUserStore()
 
 const schoolId = computed(() => route.params.id)
 const loading = computed(() => schoolStore.loading)
-const referenceData = computed(() => schoolStore.referenceData)
+const isAdmin = computed(() => {
+  const role = authStore.user?.role
+  const roleName = typeof role === 'object' ? role?.name : role
+  return String(roleName || '').toLowerCase() === 'admin'
+})
+
+const referenceData = computed(() => ({
+  ...schoolStore.referenceData,
+  users: userStore.users,
+  canEditResponsible: isAdmin.value,
+}))
 
 const schoolWithAddress = computed(() => {
   const school = schoolStore.selectedSchool
@@ -30,6 +44,7 @@ const fetchSchool = async () => {
   try {
     await Promise.all([
       schoolStore.fetchReferenceData(),
+      userStore.fetchUsers(),
       schoolStore.fetchSchoolAddresses({ school_id: schoolId.value }),
       schoolStore.fetchSchoolById(schoolId.value),
     ])

@@ -13,6 +13,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  responsibleOptions: {
+    type: Array,
+    default: () => [],
+  },
+  canEditResponsible: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -141,6 +149,24 @@ watch(
         placeholder="https://school.com"
         @update:model-value="updateModel('website', $event)"
       />
+    </ElFormItem>
+
+
+    <ElFormItem label="Responsible" prop="responsible_id">
+      <ElSelect
+        :model-value="model.responsible_id"
+        placeholder="Select responsible"
+        clearable
+        :disabled="!canEditResponsible"
+        @update:model-value="updateModel('responsible_id', $event)"
+      >
+        <ElOption
+          v-for="option in responsibleOptions"
+          :key="option.value"
+          :label="option.label"
+          :value="option.value"
+        />
+      </ElSelect>
     </ElFormItem>
 
     <ElFormItem label="Description" prop="description" class="md:col-span-2">
