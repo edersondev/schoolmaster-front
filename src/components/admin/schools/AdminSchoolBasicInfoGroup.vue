@@ -17,10 +17,6 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  canEditResponsible: {
-    type: Boolean,
-    default: false,
-  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -157,7 +153,6 @@ watch(
         :model-value="model.responsible_id"
         placeholder="Select responsible"
         clearable
-        :disabled="!canEditResponsible"
         @update:model-value="updateModel('responsible_id', $event)"
       >
         <ElOption
