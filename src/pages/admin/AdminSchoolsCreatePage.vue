@@ -5,16 +5,24 @@ import { useRouter } from 'vue-router'
 
 import AdminSchoolForm from '@/components/admin/schools/AdminSchoolForm.vue'
 import { useSchoolStore } from '@/stores/schoolStore'
+import { useUserStore } from '@/stores/userStore'
 
 const router = useRouter()
 const schoolStore = useSchoolStore()
+const userStore = useUserStore()
 
 const loading = computed(() => schoolStore.loading)
-const referenceData = computed(() => schoolStore.referenceData)
+const referenceData = computed(() => ({
+  ...schoolStore.referenceData,
+  users: userStore.users,
+}))
 
 const loadReferenceData = async () => {
   try {
-    await schoolStore.fetchReferenceData()
+    await Promise.all([
+      schoolStore.fetchReferenceData(),
+      userStore.fetchUsers(),
+    ])
   } catch (error) {
     ElMessage.error(error?.message || schoolStore.error || 'Unable to load school form data.')
   }
