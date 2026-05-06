@@ -53,7 +53,7 @@ const fieldTabMap = {
   phone: 'basic',
   website: 'basic',
   description: 'basic',
-  responsible_id: 'basic',
+  responsible_ids: 'basic',
   administrative_type_id: 'institutional',
   legal_nature_id: 'institutional',
   management_type_id: 'institutional',
@@ -100,7 +100,7 @@ const form = reactive({
   phone: '',
   website: '',
   description: '',
-  responsible_id: null,
+  responsible_ids: [],
   administrative_type_id: null,
   legal_nature_id: null,
   management_type_id: null,
@@ -149,7 +149,7 @@ const rules = computed(() => ({
   pedagogical_approach_id: [{ required: true, message: 'Pedagogical approach is required.', trigger: 'change' }],
   education_level_ids: [{ required: true, message: 'Education level is required.', trigger: 'change' }],
   modality_ids: [{ required: true, message: 'At least one modality is required.', trigger: 'change' }],
-  responsible_id: [{ required: true, message: 'Responsible is required.', trigger: 'change' }],
+  responsible_ids: [{ required: true, message: 'At least one responsible is required.', trigger: 'change' }],
   address_street: [{ required: true, message: 'Street is required.', trigger: 'blur' }],
   address_city: [{ required: true, message: 'City is required.', trigger: 'blur' }],
   address_state: [{ required: true, message: 'State is required.', trigger: 'blur' }],
@@ -171,7 +171,7 @@ const basicInfoModel = computed({
     phone: form.phone,
     website: form.website,
     description: form.description,
-    responsible_id: form.responsible_id,
+    responsible_ids: form.responsible_ids,
   }),
   set: (value = {}) => {
     form.inep_code = value.inep_code ?? ''
@@ -184,7 +184,7 @@ const basicInfoModel = computed({
     form.phone = value.phone ?? ''
     form.website = value.website ?? ''
     form.description = value.description ?? ''
-    form.responsible_id = toNumberOrNull(value.responsible_id)
+    form.responsible_ids = toNumberArray(value.responsible_ids)
   },
 })
 
@@ -259,7 +259,7 @@ const hydrateForm = (values) => {
   form.phone = values?.phone || ''
   form.website = values?.website || ''
   form.description = values?.description || ''
-  form.responsible_id = toNumberOrNull(values?.responsible_id)
+  form.responsible_ids = toNumberArray(values?.responsible_ids || (values?.responsible_id ? [values.responsible_id] : []))
   form.administrative_type_id = toNumberOrNull(values?.administrative_type_id)
   form.legal_nature_id = toNumberOrNull(values?.legal_nature_id)
   form.management_type_id = toNumberOrNull(values?.management_type_id)
@@ -293,7 +293,7 @@ const serializePayload = () => {
     phone: digitsOnly(form.phone),
     website: String(form.website || '').trim(),
     description: String(form.description || '').trim(),
-    responsible_id: Number(form.responsible_id || 0) || null,
+    responsible_ids: toNumberArray(form.responsible_ids),
     administrative_type_id: Number(form.administrative_type_id),
     legal_nature_id: Number(form.legal_nature_id),
     management_type_id: Number(form.management_type_id),

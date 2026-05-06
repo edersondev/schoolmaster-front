@@ -148,12 +148,13 @@ watch(
     </ElFormItem>
 
 
-    <ElFormItem label="Responsible" prop="responsible_id">
+    <ElFormItem label="Responsible" prop="responsible_ids">
       <ElSelect
-        :model-value="model.responsible_id"
-        placeholder="Select responsible"
+        :model-value="model.responsible_ids"
+        placeholder="Select responsibles"
         clearable
-        @update:model-value="updateModel('responsible_id', $event)"
+        multiple
+        @update:model-value="updateModel('responsible_ids', $event)"
       >
         <ElOption
           v-for="option in responsibleOptions"

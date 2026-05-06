@@ -162,7 +162,7 @@
       "language": "pt-BR",
       "education_level_ids": [1, 2],
       "modality_ids": [1],
-      "responsible_id": 1,
+      "responsible_ids": [1],
       "created_at": "2026-04-21T09:00:00Z",
       "updated_at": "2026-04-21T09:00:00Z"
     },
@@ -189,7 +189,7 @@
       "language": "pt-BR",
       "education_level_ids": [1, 2, 3],
       "modality_ids": [1, 3],
-      "responsible_id": 2,
+      "responsible_ids": [2],
       "created_at": "2026-04-21T09:10:00Z",
       "updated_at": "2026-04-21T09:10:00Z"
     },
@@ -216,7 +216,7 @@
       "language": "pt-BR",
       "education_level_ids": [4],
       "modality_ids": [1, 2, 3],
-      "responsible_id": 5,
+      "responsible_ids": [5],
       "created_at": "2026-04-21T09:20:00Z",
       "updated_at": "2026-04-21T09:20:00Z"
     }
