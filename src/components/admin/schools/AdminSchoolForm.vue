@@ -370,6 +370,7 @@ watch(
           <AdminSchoolBasicInfoGroup
             v-model="basicInfoModel"
             :is-edit="isEdit"
+            :responsible-options="responsibleOptions"
           />
         </div>
       </ElTabPane>
@@ -384,8 +385,6 @@ watch(
             :pedagogical-approaches="pedagogicalApproachOptions"
             :education-levels="educationLevelsOptions"
             :modalities="modalityOptions"
-            :responsible-options="responsibleOptions"
-            :can-edit-responsible="referenceData.canEditResponsible"
           />
         </div>
       </ElTabPane>

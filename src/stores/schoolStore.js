@@ -24,6 +24,9 @@ const normalizeSchoolPayload = (payload = {}) => {
     phone: onlyDigits(payload.phone),
     website: String(payload.website || '').trim(),
     description: String(payload.description || '').trim(),
+    responsible_ids: Array.isArray(payload.responsible_ids)
+      ? payload.responsible_ids.map((value) => Number(value)).filter(Boolean)
+      : [],
     administrative_type_id: Number(payload.administrative_type_id || 0) || null,
     legal_nature_id: Number(payload.legal_nature_id || 0) || null,
     management_type_id: Number(payload.management_type_id || 0) || null,

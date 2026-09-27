@@ -120,6 +120,7 @@ describe('schoolStore', () => {
       status: 1,
       education_level_ids: [1],
       modality_ids: [1],
+      responsible_ids: ['42'],
       address: {
         city: 'Campinas',
         state: 'SP',
@@ -128,6 +129,7 @@ describe('schoolStore', () => {
     })
 
     expect(createSchoolMock).toHaveBeenCalledTimes(1)
+    expect(createSchoolMock).toHaveBeenCalledWith(expect.objectContaining({ responsible_ids: [42] }))
     expect(createSchoolAddressMock).toHaveBeenCalledWith(expect.objectContaining({
       school_id: 9,
       city: 'Campinas',
@@ -179,6 +181,7 @@ describe('schoolStore', () => {
       status: 1,
       education_level_ids: [1],
       modality_ids: [1],
+      responsible_ids: ['43'],
       address: {
         city: 'Campinas',
         state: 'SP',
@@ -189,6 +192,7 @@ describe('schoolStore', () => {
     expect(updateSchoolMock).toHaveBeenCalledWith(1, expect.objectContaining({
       name: 'Updated Name',
       document: '12345678000110',
+      responsible_ids: [43],
     }))
     expect(updateSchoolAddressMock).toHaveBeenCalledWith(8, expect.objectContaining({
       school_id: 1,

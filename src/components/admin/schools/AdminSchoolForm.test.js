@@ -7,6 +7,7 @@ import AdminSchoolForm from './AdminSchoolForm.vue'
 const validateMock = vi.hoisted(() => vi.fn())
 
 vi.mock('element-plus', () => ({
+  formContextKey: Symbol('formContextKey'),
   ElMessage: {
     error: vi.fn(),
   },
@@ -200,6 +201,7 @@ describe('AdminSchoolForm', () => {
           pedagogicalApproaches: [{ id: 4, name: 'Constructivist' }],
           educationLevels: [{ id: 5, name: 'Elementary School' }],
           modalities: [{ id: 6, name: 'On-site' }],
+          users: [{ id: 42, name: 'School Responsible' }],
         },
         initialValues: {
           inep_code: '35000001',
@@ -254,6 +256,12 @@ describe('AdminSchoolForm', () => {
     await cnpjInput.setValue('12.345.678/0001-90')
     await phoneInput.setValue('(11) 99999-8888')
 
+    const responsibleSelect = wrapper.findAll('select').find((select) => (
+      select.find('option[value="42"]').exists()
+    ))
+    expect(responsibleSelect).toBeDefined()
+    await responsibleSelect.setValue(['42'])
+
     const submitButton = wrapper.findAll('button').find((node) => node.text() === 'Create school')
     await submitButton.trigger('click')
     await flushPromises()
@@ -274,6 +282,7 @@ describe('AdminSchoolForm', () => {
       pedagogical_approach_id: 4,
       education_level_ids: [5],
       modality_ids: [6],
+      responsible_ids: [42],
       address: expect.objectContaining({
         street: 'Rua A',
         city: 'Campinas',
